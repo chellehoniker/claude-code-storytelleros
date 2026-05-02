@@ -1,0 +1,26 @@
+{
+  "name": "storytelleros",
+  "version": "0.1.0",
+  "description": "Skills and slash commands for StorytellerOS. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Drives writing, knowledge, finance, calendar, and sales workflows from inside Claude — without leaving the conversation.",
+  "author": {
+    "name": "StorytellerOS",
+    "email": "support@storytelleros.com",
+    "url": "https://storytelleros.com"
+  },
+  "homepage": "https://storytelleros.com/docs/connect",
+  "repository": "https://github.com/chellehoniker/claude-code-storytelleros",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "authors",
+    "fiction",
+    "story-bible",
+    "world-building",
+    "time-tracking",
+    "tasks",
+    "knowledge-management",
+    "finance",
+    "calendar",
+    "indie-author"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "storytelleros",
+  "owner": {
+    "name": "StorytellerOS",
+    "email": "support@storytelleros.com",
+    "url": "https://storytelleros.com"
+  },
+  "description": "Claude plugins for indie authors using StorytellerOS. Connect your StorytellerOS workspace and run everything through Claude — drafting, story-bible lookup, time-tracking, tasks, finance, and calendar.",
+  "plugins": [
+    {
+      "name": "storytelleros",
+      "source": "./",
+      "description": "Quick-capture tasks, draft chapters, run timers, and search your books and lore from Claude. Pairs with a StorytellerOS account; connector is added separately so the credential fields stay editable.",
+      "version": "0.1.0"
+    }
+  ]
+}
