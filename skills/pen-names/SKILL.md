@@ -9,13 +9,11 @@ description: Use when the user mentions a specific pen name, has multiple pen na
 
 Authors who write under multiple pen names rely on StorytellerOS' pen-name separation: each pen name has its own books library, characters, locations, lore, calendar, finance ledger, tasks, and brand voice guides. The web app has a top-right dropdown to switch between them.
 
-In the plugin, every profile-scoped tool (`stos_books_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, `stos_articles_list`, etc.) accepts an optional pen-name selector. **Without one, calls go to the user's active / primary pen name.**
-
-<!-- TODO: confirm parameter name once Phase 1A REST routes land — current intent per the plan is either an `X-Profile-Id` header forwarded by the MCP layer or a `penNameId` argument on each tool. Update this skill once the surface is finalized. -->
+In the plugin, every profile-scoped tool (`stos_titles_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, `stos_articles_list`, etc.) accepts an optional `penNameId` argument. **Without one, calls go to the user's active / primary pen name.** Under the hood the MCP layer forwards it as an `X-Pen-Name-Id` header to `/api/v1/*` — Claude only needs to pass the argument.
 
 ## When to use this skill
 
-The user mentions a pen name by name, OR the user has multiple pen names, OR you suspect you're addressing the wrong identity (e.g., `stos_books_list` returns an empty list and the user said they have books drafted).
+The user mentions a pen name by name, OR the user has multiple pen names, OR you suspect you're addressing the wrong identity (e.g., `stos_titles_list` returns an empty list and the user said they have books drafted).
 
 ## Flow
 
@@ -42,10 +40,10 @@ If the user said "draft a chapter for Indie Annie" and you see a pen name "Indie
 
 ```js
 // Before pen-name switch
-stos_books_list({})  // → primary pen name's books
+stos_titles_list({})  // → primary pen name's books
 
 // After
-stos_books_list({ penNameId: "pn_def456..." })  // → Indie Annie's books
+stos_titles_list({ penNameId: "pn_def456..." })  // → Indie Annie's books
 stos_chapters_update({ penNameId: "pn_def456...", chapterId, content })
 stos_tasks_create({ penNameId: "pn_def456...", title: "..." })
 ```
@@ -60,7 +58,7 @@ Story bible reads (`stos_characters_list`, `stos_locations_list`, `stos_lore_lis
 
 - **Forgetting the selector mid-sequence.** If the user has been working under a non-primary pen name for the last several tool calls, keep using its id. Don't silently revert to primary.
 - **Calling `stos_pen_names_list` multiple times.** It's the same data each time — call it once at the start of the conversation when needed and remember the IDs.
-- **Treating an empty `stos_books_list` as "user has nothing."** First check: did you scope to the right pen name? Their books might live under a different pen name.
+- **Treating an empty `stos_titles_list` as "user has nothing."** First check: did you scope to the right pen name? Their books might live under a different pen name.
 - **Mixing pen names in a single record.** A character belongs to one pen name. A book belongs to one pen name. Don't try to attach a character from pen name A to a book under pen name B.
 
 ## Sample exchange
@@ -69,10 +67,10 @@ Story bible reads (`stos_characters_list`, `stos_locations_list`, `stos_lore_lis
 
 **You:**
 1. Call `stos_pen_names_list` — find "Indie Annie", get id
-2. Call `stos_books_list({ penNameId })` — find the active cozy and book id
-3. Call `stos_chapters_list({ penNameId, bookId })` — find chapter 3 (or the next slot)
-4. Call `stos_characters_list({ penNameId, bookId })` and `stos_locations_list({ penNameId, bookId })` — load story-bible context
+2. Call `stos_titles_list({ penNameId })` — find the active cozy and title id
+3. Call `stos_chapters_list({ penNameId, bookId: titleId })` — find chapter 3 (or the next slot)
+4. Call `stos_characters_list({ penNameId })` and `stos_locations_list({ penNameId })` — load story-bible context
 5. Draft the chapter in the cozy voice, given the urn cliffhanger
-6. Show the draft to the user, then on approval `stos_chapters_update({ penNameId, chapterId, content })`
+6. Show the draft to the user, then on approval `stos_chapters_update({ id: chapterId, fields: { ... } })`
 
 If the selector is omitted on any of those calls, it'd go to the primary pen name — wrong identity, wrong story bible, wrong voice.

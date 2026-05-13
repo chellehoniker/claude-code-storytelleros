@@ -1,8 +1,8 @@
 # StorytellerOS — Claude Plugin
 
-Drive your StorytellerOS workspace from inside Claude Code or Claude Cowork — drafting and revising chapters, looking up characters and lore, capturing tasks, running writing timers, logging expenses, and managing your calendar without leaving the conversation.
+Drive your StorytellerOS workspace from inside Claude Code or Claude Cowork — drafting and revising chapters, generating full story bibles, looking up characters and lore, capturing tasks, running writing timers, logging expenses, and managing your calendar without leaving the conversation.
 
-> **Pre-1.0.** This plugin ships skills and slash commands that talk to the StorytellerOS hosted MCP endpoint. The endpoint is rolling out alongside this plugin; if your `stos_*` tool calls return 401 right after install, the connector and endpoint are still being wired up — try again shortly or reach out to support.
+> StorytellerOS calls long-form works **titles**, not books — that covers novels, screenplays, audiobook scripts, games, and novellas equally.
 
 ## Install
 
@@ -29,7 +29,7 @@ In any Claude Code or Cowork session:
 /plugin install storytelleros@storytelleros
 ```
 
-This adds the conversational skills (`stos-setup`, `pen-names`, `quick-task-capture`) and the `/stos-task`, `/stos-write`, `/stos-time`, `/stos-search` slash commands.
+This adds the conversational skills (see the table below) and the `/stos-*` slash commands. No connector is bundled — Step 1 already covers that.
 
 ## Quick start
 
@@ -41,26 +41,37 @@ Or just describe what you want:
 
 > "Draft chapter 4 of my Indie Annie cozy — the previous chapter ended with the cat knocking the urn over."
 
+> "Build a full story bible for *Curses and Currents* from the manuscript I just uploaded."
+
 > "Start a writing timer for the Stardew prequel."
 
-> "Search my lore for everything about the Crow Court."
+> "Log a $400 expense for editor Sarah Marsh, category Editing, against *Curses and Currents*."
 
-> "Log a $400 expense for editor Sarah Marsh, category Editing."
+> "Post about my new release on Instagram." → routes to the Author Automations plugin (see *Social work* below).
 
 Claude pulls the relevant story bible, writes in the right pen name's voice, and saves work back to your workspace. You review before anything is finalized.
 
 ## What's bundled
 
-| Component | Notes |
+| Component | Triggers / Notes |
 |---|---|
-| **Skills** | `stos-setup` (connect & troubleshoot), `pen-names` (switch between author identities), `quick-task-capture` (one-shot todos) |
-| **Slash commands** | `/stos-task <text>`, `/stos-write <description>`, `/stos-time <start\|stop\|status>`, `/stos-search <query>` |
+| **MCP tools** | ~80 `stos_*` tools mirroring `/api/v1/*` — full CRUD across titles, chapters, scenes, characters, locations, lore, events, tasks, calendars, time-tracking, finance, sales, marketing, settings. |
+| **Skills** | `stos-setup`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff` |
+| **Slash commands** | `/stos-task <text>`, `/stos-write <description>`, `/stos-time <start\|stop\|status>`, `/stos-search <query>`, `/stos-bible <title>`, `/stos-finance <income\|expense> <amount> <note>`, `/stos-revise <chapter> <feedback>` |
 
-The fuller skill bundle — chapter drafting, world-building, time-tracking review, finance flows — lands in a future release as the corresponding tool surface goes live.
+## Story bibles — built one entry at a time
 
-## Pairs with Author Automations Social
+The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own POST** — no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
 
-If you also use [Author Automations Social](https://authorautomations.social) for social posts, install both plugins side by side. StorytellerOS handles writing, knowledge, finance, calendar, and sales. Author Automations handles posts, campaigns, and scheduling. Both work in the same Cowork conversation — Claude will route social work to `aa_*` tools and writing/business work to `stos_*` tools.
+## Social work — handed off to Author Automations
+
+This plugin does **not** post to social. Social is handled by the [Author Automations Social](https://authorautomations.social) plugin, which already has 22 `aa_*` tools across 15 platforms. When you ask Claude to post, schedule, or run a campaign, the `social-handoff` skill:
+
+1. Calls `stos_pen_names_get` to read the pen name's `aaProfileId` (set automatically by the AA ↔ STOS sync).
+2. Stops with a clear message if the pen name isn't connected to AA Social.
+3. Otherwise calls the matching `aa_*` tool with `profileId: aaProfileId`.
+
+No double-hop, no STOS-side social proxy — the two plugins work side by side in the same conversation.
 
 ## Authentication
 
@@ -70,11 +81,16 @@ Lost the secret? Generate a new pair from [Settings → API keys](https://storyt
 
 If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"* — the bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
 
+## Pairs with Author Automations Social
+
+Install both plugins side by side. StorytellerOS handles writing, knowledge, finance, calendar, and sales. Author Automations handles posts, campaigns, and scheduling. Both work in the same Cowork conversation — Claude routes social work to `aa_*` tools and writing/business work to `stos_*` tools.
+
 ## Troubleshooting
 
 - **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros" — the `stos-setup` skill walks through generating fresh credentials and updating the connector.
 - **Tools not showing up at all:** the connector probably wasn't added (Step 1). Add it via Settings → Connectors → Add custom connector.
-- **Wrong pen name's data appearing:** see the `pen-names` skill — pass the pen-name selector on every call in a multi-step flow.
+- **Wrong pen name's data appearing:** see the `pen-names` skill — pass the `penNameId` argument on every call in a multi-step flow.
+- **Social handoff stops because pen name isn't connected:** open Author Automations and provision the pen name there; STOS picks up the link via webhook automatically.
 
 ## Updating
 

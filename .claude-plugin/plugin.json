@@ -1,7 +1,7 @@
 {
   "name": "storytelleros",
-  "version": "0.1.0",
-  "description": "Skills and slash commands for StorytellerOS. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Drives writing, knowledge, finance, calendar, and sales workflows from inside Claude — without leaving the conversation.",
+  "version": "0.2.0",
+  "description": "Skills and slash commands for StorytellerOS — write titles, build story bibles, run timers, capture tasks, log finance, and manage your calendar from inside Claude Cowork. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Social work hands off to the Author Automations Social plugin (no double-hop).",
   "author": {
     "name": "StorytellerOS",
     "email": "support@storytelleros.com",
@@ -14,6 +14,8 @@
     "writing",
     "authors",
     "fiction",
+    "screenwriting",
+    "audiobook",
     "story-bible",
     "world-building",
     "time-tracking",
@@ -21,6 +23,8 @@
     "knowledge-management",
     "finance",
     "calendar",
+    "sales-studio",
+    "marketing-studio",
     "indie-author"
   ]
 }

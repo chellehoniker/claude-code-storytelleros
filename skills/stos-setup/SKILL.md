@@ -17,7 +17,7 @@ description: Use when the user wants to set up, configure, or connect Storytelle
 Two parts, intentionally split:
 
 1. **The connector** — added manually via Cowork's "Add custom connector" dialog. Lives at `https://storytelleros.com/api/mcp` and authenticates with a Cowork connector credential pair the user generates from their dashboard. Cowork mints a Bearer token for each MCP request.
-2. **The plugin** — installed via the marketplace. Adds skills (`stos-setup`, `pen-names`, `quick-task-capture`) and slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`). No connector bundled.
+2. **The plugin** — installed via the marketplace. Adds 15 skills (`stos-setup`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff`) and 7 slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`, `/stos-bible`, `/stos-finance`, `/stos-revise`). No connector bundled.
 
 We deliberately do NOT bundle the connector in the plugin manifest. When a plugin auto-installs a connector, Cowork locks the credential fields, which blocks the user from pasting their own credentials. Splitting setup in two keeps those fields editable.
 
