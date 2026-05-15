@@ -22,6 +22,19 @@ for each character in the manuscript:
 
 Same for locations, events, lore. The user explicitly asked for the fullest possible output and no shortcuts; this is enforced at the skill level, not by the tools.
 
+## Canonical field values — send these exactly
+
+The Story Bible tables have strict CHECK constraints. Sending anything other than the canonical value below silently drops the field — the rest of the record saves, but you'll have wasted tokens and the user will see a blank column in the UI. **Map synonyms to the canonical value before calling the tool. If a value can't be mapped, omit the field entirely — never invent, never stash the original somewhere else.**
+
+| Field | Canonical values | Synonym → canonical |
+|---|---|---|
+| `characters.role_in_story` | `protagonist`, `antagonist`, `supporting`, `minor`, `love-interest`, `other` | hero / heroine / lead / main / MC → **protagonist** • villain / big-bad / rival → **antagonist** • deuteragonist / mentor / sidekick / ally / foil / friend / family → **supporting** • love interest / romantic interest / romance → **love-interest** • background / extra / NPC / cameo / walk-on → **minor** |
+| `characters.life_status` | `alive`, `dead`, `undead`, `missing`, `unknown` | deceased / killed → **dead** • living / alive-and-well → **alive** • absent / lost / disappeared → **missing** • ghost / vampire / zombie → **undead** |
+| `characters.pov_status` | `pov-character`, `non-pov` | any POV / occasional-POV / multi-POV / "yes" / "true" / "POV" → **pov-character** • everything else (or "no" / "false") → **non-pov** |
+| `events.act` | `act-one`, `act-two`, `act-three`, `act-four` | 1 / I / "Act 1" / "Act I" → **act-one** (and 2/II → act-two, etc.) |
+
+**Never send `custom_fields`** on any Cowork story-bible create call. The StorytellerOS UI does not render those keys for Cowork-completed records — the data lands invisible. Stick to the named columns listed in each tool's writable-fields description.
+
 ## Flow
 
 ### 1. Scope
@@ -50,8 +63,8 @@ Read whatever they provide before drafting entries.
 
 For each character mentioned in the source:
 
-1. Draft the full record in the conversation (name, role, age, occupation, pronouns, gender, life_status, background, physical_description, personality, pov_status, dialogue_style, core_desire, core_fear, goals_and_motivations, strengths, flaws, internal_conflict, external_conflict, character_arc, backstory, key_relationships, lexicon_and_quirks, emotional_tells, speech_patterns, internal_voice, sample_scene).
-2. Show it briefly to the user for sanity-check on the first 2–3 entries; then proceed.
+1. Assemble the full record (name, role, age, occupation, pronouns, gender, life_status, background, physical_description, personality, pov_status, dialogue_style, core_desire, core_fear, goals_and_motivations, strengths, flaws, internal_conflict, external_conflict, character_arc, backstory, key_relationships, lexicon_and_quirks, emotional_tells, speech_patterns, internal_voice, sample_scene). Apply the canonical-value mapping above before you reach for the tool.
+2. Print a one-line summary per entry (`Sasha — protagonist, witch, POV`) so the user can follow along. **Do not paste the full record block inline** — the full record only goes into the tool call. Inline drafting eats the user's token budget without adding value.
 3. `stos_characters_create({ fields: { ... } })` — one call per character.
 4. Record the returned id so you can link later.
 
@@ -73,6 +86,30 @@ For each (entity, target) pair the source implies (e.g. "Sasha appears in chapte
 
 Supported pairs include title↔{character,location,event,lore}, chapter↔{character,event}, scene↔{character,location,event}, series↔{location,lore}, event↔{character,location}, lore↔{character,location}.
 
+### 7a. Scope lore and locations to the series
+
+Characters carry a `series_id` directly, so they show up under the series filter as soon as they're created. **Lore and locations don't** — they live in `lore` and `locations` tables with no series column, and only surface under the series filter when an entry exists in the `series_lore` / `series_locations` junction. Without this step, every lore/location entry orphans visually.
+
+For each lore entry just created:
+
+```
+stos_worldbuilding_link({
+  entityType: 'series', entityId: <seriesId>,
+  targetType: 'lore',   targetId:  <loreId>
+})
+```
+
+For each location:
+
+```
+stos_worldbuilding_link({
+  entityType: 'series', entityId: <seriesId>,
+  targetType: 'location', targetId: <locationId>
+})
+```
+
+One call per entry. These run alongside the chapter/scene-level links from Step 7 — they're additive, not a replacement.
+
 ### 8. Report
 
 End with counts:
@@ -86,6 +123,10 @@ If any single `_create` call failed mid-loop, surface the failure with the entry
 - **Batching multiple entries into one tool call.** Hard no. The whole point of this skill is the per-entity loop.
 - **Skipping fields to save time.** If you have the information, save it. Truncating a character's `backstory` to a one-liner defeats the bible.
 - **Forgetting associations.** A character that isn't linked to any chapter or scene is dead weight — wire every connection the source implies.
+- **Forgetting the series-level links from Step 7a.** A lore entry or location without a `series_lore` / `series_locations` row will not appear under the series filter and the user will conclude the bible isn't connected.
+- **Sending non-canonical enum values.** Map first (see the *Canonical field values* table); if you can't map, omit the field. Sending "Deuteragonist" or "Act 1" silently drops the field at the DB CHECK constraint and burns retry tokens.
+- **Sending `custom_fields`.** Invisible in the StorytellerOS UI for Cowork-completed records. Use only named columns.
+- **Pasting full record blocks inline before calling the tool.** The tool call carries the record — printed paragraphs just consume the user's Claude allowance.
 - **Drafting under the wrong pen name.** Same continuity hazard as `chapter-drafting`.
 
 ## Tip for very large manuscripts
