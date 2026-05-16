@@ -1,6 +1,6 @@
 ---
 name: story-bible
-description: Use when the user wants to generate, extract, or build out a full story bible for a title. Triggers on "generate a story bible", "build out the world of [title]", "extract characters from this manuscript", "set up the worldbuilding for [series]", "what characters appear in [title]". Loops per-entity — no bulk shortcuts.
+description: Use when the user wants to generate, extract, or build out a full story bible for a title. Triggers on "generate a story bible", "build out the world of [title]", "extract characters from this manuscript", "set up the worldbuilding for [series]", "what characters appear in [title]". Routes uploaded manuscripts through the server-side extractor; loops per-entity only for chat-sourced bibles.
 ---
 
 # Story Bible
@@ -11,16 +11,53 @@ A "story bible" in StorytellerOS is the union of four worldbuilding tables: **ch
 
 When the user asks Claude to build a bible, the work is producing structured records for each entry — every character with their core_desire, core_fear, character_arc, etc.; every location with key_features, climate; every event with act and importance; every lore entry with rules_and_mechanics and origin_and_history.
 
-## The no-shortcuts rule
+## Two paths — pick by source
 
-**One record at a time.** Even if Claude could in principle assemble a JSON array of 30 characters and POST them in one call, don't — large manuscripts trip context windows mid-batch and entries get truncated. Loop instead:
+**The decision is purely about the source of the manuscript text**, not the user's wording.
+
+### Path A — Uploaded manuscript (default, USE THIS WHENEVER POSSIBLE)
+
+If the title already has an uploaded manuscript in STOS — check with `stos_title_manuscripts_list({ titleId })`, or look for `manuscript_storage_path` on the title — kick off the server-side pipeline in **one call**:
 
 ```
-for each character in the manuscript:
-  stos_characters_create({ fields: { character_name, role_in_story, core_desire, core_fear, ... } })
+stos_titles_extract_story_bible({ titleId })
+  → { jobId, statusUrl, options, provider }
+
+// Then poll every 5s until terminal:
+stos_extraction_jobs_get({ jobId })
+  → { status, progress: { stage, pct, detail }, result: { ... } }
 ```
 
-Same for locations, events, lore. The user explicitly asked for the fullest possible output and no shortcuts; this is enforced at the skill level, not by the tools.
+While polling, surface the progress detail to the user ("Surveying named characters…", "Locations: chunk 2 of 5"). Stop polling when `status === 'completed'` or `'failed'`.
+
+On `'failed'`, the result carries a `terminal_error` block with a ready-to-paste `user_message`. Show it verbatim — don't re-summarise. The classes are:
+- `cap` — AI provider monthly cap exhausted
+- `billing` — provider account needs credits
+- `auth` — saved API key rejected
+- `oversize` — single manuscript piece exceeds the provider window (rare with chunking; suggest splitting)
+- `empty-output` — provider returned nothing usable; confirm the right file was uploaded
+- `rate-limit` — short-window throttle; retry after a minute
+
+On `'completed'`, summarise the per-kind counts from `result.created` / `result.merged` and remind the user that drafts are in Worldbuilding for review.
+
+**Why this is the default**: the per-entity loop in Path B reliably runs out of agent turn budget on a real novel (30+ characters → 8-15 locations → 10-20 events → 5-10 lore entries × ~2k tokens each, plus the loop tool-call overhead). Real users (Deb 2026-05-15) saw the bible "save characters but skip lore/events/locations" because the agent got cut off mid-loop. The server-side path doesn't have that ceiling — it chunks the manuscript per provider, runs each pass with raw prose, and dedupes results before persisting.
+
+After completion, still run the association-wiring step from §7 below (chapter/scene/series links) — the server-side extractor does the core persists, but cross-table junctions are the agent's job.
+
+### Path B — Chat-sourced bible (no uploaded manuscript)
+
+If the source is an outline, synopsis, or premise pasted into chat, the per-entity loop is the only option — there's no file for the server to read. Drop into the loop documented in §3-§7. The "no shortcuts" rule below still applies: one tool call per entry, no batching.
+
+```
+for each character in the source:
+  stos_characters_create({ fields: { character_name, role_in_story, ... } })
+```
+
+Same for locations, events, lore.
+
+## The no-shortcuts rule (Path B only)
+
+**One record at a time.** Even if Claude could in principle assemble a JSON array of 30 characters and POST them in one call, don't — large sources trip context windows mid-batch and entries get truncated. Loop instead. The user explicitly asked for the fullest possible output and no shortcuts; this is enforced at the skill level, not by the tools.
 
 ## Canonical field values — send these exactly
 
@@ -129,6 +166,10 @@ If any single `_create` call failed mid-loop, surface the failure with the entry
 - **Pasting full record blocks inline before calling the tool.** The tool call carries the record — printed paragraphs just consume the user's Claude allowance.
 - **Drafting under the wrong pen name.** Same continuity hazard as `chapter-drafting`.
 
-## Tip for very large manuscripts
+## Very large manuscripts
 
-If the manuscript is >200k words, ask the user whether they want to process it chapter-by-chapter rather than as a single pass. STOS already has `/api/extract-manuscript-bible/run` for that — the in-app version of this skill — but the CoWork story-bible flow does it conversationally.
+The server-side path (Path A) already chunks the manuscript into provider-fitting pieces and dedupes drafts across chunks, so a 200k-word novel runs in one `stos_titles_extract_story_bible` call. You don't need to pre-split anything. The progress detail surfaced through `stos_extraction_jobs_get` will show the chunk count as it works through the book.
+
+If the server returns `terminal_error.kind === 'oversize'`, that means a *single chapter* exceeds the provider context window — extremely rare. Tell the user, suggest splitting the offending chapter, and don't retry blindly.
+
+Path B's per-entity loop has no chunking — if a user pastes a 200k-word manuscript directly into chat (no upload), stop and ask them to upload it to the title first so you can use Path A. Pasting a novel into chat just to feed the loop wastes their token budget and risks the same mid-loop cutoff.
