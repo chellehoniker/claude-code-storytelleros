@@ -142,6 +142,122 @@ Tracking parity:
 
 Automation emails use the same open/click pipeline as campaign emails. Per-recipient counters live on `email_campaign_sends` keyed by `(enrollment_id, automation_step_id)`; the table's `campaign_id` is NULL for these rows.
 
+### Signup forms + custom domains
+
+Two surfaces let authors collect new subscribers without leaving STOS.
+
+| Surface | What | Where |
+|---|---|---|
+| Hosted signup page | Public landing at `/f/<slug>` | `stos_email_signup_forms` |
+| JS embed snippet | `<script async src="/api/forms/<slug>/embed.js"></script>` — drops a self-mounting iframe on any author site | Same row, same slug |
+| Custom domain | CNAME `subscribe.<author-domain>` → app + TXT record on `_stos-form-verification.<domain>` for ownership proof | `stos_email_custom_domains` |
+
+`form_type` is `landing_page` | `embed` | `popup`. `target_list_ids` + `target_tag_ids` decide where new subscribers land — they must belong to the same pen name as the form. `double_opt_in=true` (default) sends a confirmation email; the recipient clicks to flip subscription status from `pending` to `subscribed`.
+
+Public submission endpoint:
+
+```
+POST /api/forms/<slug>/submit          # email, first_name, last_name, _hp (honeypot)
+GET  /api/forms/confirm/<token>        # double-opt-in confirmation
+```
+
+Custom domain verification:
+
+```js
+stos_email_custom_domains_create({ fields: { pen_name_id, domain: 'subscribe.example.com' }})
+// → set DNS records shown in the UI, then:
+stos_email_custom_domains_verify({ id: '...' })  // checks the TXT record live
+```
+
+### Templates + activities
+
+`stos_email_templates_user` stores author-saved designs (full templates, `is_section=false`) and reusable section snippets (`is_section=true`). `design_json` holds a block array; in-code starter templates remain in the campaign-create gallery as a read-only seed.
+
+`stos_email_contact_activities` is the per-contact timeline that powers the subscriber-profile page. Triggers populate it automatically for subscribed / unsubscribed / confirmed / bounced / complained / added_to_list / removed_from_list / tagged / untagged / email_sent / email_opened / email_clicked / enrolled_in_automation / exited_automation / completed_automation. Manual inserts are supported for `note_added` and for backfill from external ESPs.
+
+## Orchestration: STOS as ESP-of-record
+
+A common use case is **author sends through a third-party ESP and uses STOS as the source of truth for audit, analytics, and cross-channel orchestration**. The MCP surface is designed to support this — every author-owned table carries source-provenance columns:
+
+| Column | Use |
+|---|---|
+| `external_source` | Short slug of the originating system (`flodesk`, `mailerlite`, `kit`, `convertkit`, `manual`, `form:<slug>`, `stos-native`, etc.) |
+| `external_id` | The id of this record in that external system — for dedupe + linking on re-sync |
+| `external_url` | Deep-link back to the original record so Cowork can open it |
+| `imported_at` | When STOS first saw this row (distinct from `created_at`, which is when STOS itself wrote the row) |
+
+All four are nullable. STOS-native records (created via the dashboard or default MCP calls) leave them NULL.
+
+### Typical flows
+
+**Log a campaign that was sent through Flodesk:**
+
+```js
+// 1. Create the campaign in STOS with external_source so it's clear where it came from.
+const campaign = stos_email_campaigns_create({
+  fields: {
+    pen_name_id: '<pen>',
+    campaign_name: 'February newsletter',
+    subject_line: 'February news',
+    status: 'sent',
+    external_source: 'flodesk',
+    external_id: 'flo_abc123',
+    external_url: 'https://app.flodesk.com/campaigns/abc123',
+    imported_at: '2026-02-15T10:00:00Z',
+  },
+});
+
+// 2. Backfill per-recipient sends + open/click events in one bulk call.
+stos_email_campaigns_bulk_sends({
+  id: campaign.id,
+  external_source: 'flodesk',
+  rows: [
+    { email: 'reader@example.com', external_id: 'flo_msg_xyz', sent_at: '2026-02-15T10:00:00Z',
+      opens: [{ at: '2026-02-15T11:23:00Z' }],
+      clicks: [{ at: '2026-02-15T11:24:10Z', url: 'https://...' }] },
+    ...
+  ],
+});
+
+// 3. STOS computes aggregates (total_sent, unique_opens, unique_clicks)
+//    from the inserted rows. The campaign now shows up in analytics
+//    alongside STOS-native campaigns.
+```
+
+**Import a list of subscribers from MailerLite:**
+
+```js
+// For each subscriber:
+stos_email_contacts_create({ fields: {
+  email, first_name, last_name,
+  external_source: 'mailerlite',
+  external_id: 'ml_sub_id',
+  imported_at: '2026-01-10T...',
+}});
+// Then attach to the appropriate list/tag the same way.
+```
+
+**Log a historical event from an old send:**
+
+```js
+stos_email_contact_activities_create({ fields: {
+  contact_id, type: 'email_sent', description: 'Old newsletter',
+  occurred_at: '2025-11-01T10:00:00Z',
+  external_source: 'mailerlite',
+  external_id: 'ml_campaign_id',
+}});
+```
+
+### When NOT to use the bulk path
+
+If the author wants STOS to actually **send** (open rate tracked via STOS pixel, unsubscribe via STOS footer, etc.), use the native flow:
+
+```js
+stos_email_campaigns_send({ id })  // STOS sends, STOS tracks
+```
+
+The bulk path is for read-only mirroring of sends that happened elsewhere — opens / clicks come from the source ESP's analytics, not from STOS's pixel (because STOS never put a pixel in those emails).
+
 ## Articles, FAQs, webinars
 
 ```js
