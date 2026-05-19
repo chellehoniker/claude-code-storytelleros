@@ -1,6 +1,6 @@
 ---
 name: story-bible
-description: Use when the user wants to generate, extract, or build out a full story bible for a title. Triggers on "generate a story bible", "build out the world of [title]", "extract characters from this manuscript", "set up the worldbuilding for [series]", "what characters appear in [title]". Routes uploaded manuscripts through the server-side extractor; loops per-entity only for chat-sourced bibles.
+description: Use when the user wants to generate, extract, or build out a full story bible for a title. Triggers on "generate a story bible", "build out the world of [title]", "extract characters from this manuscript", "set up the worldbuilding for [series]", "what characters appear in [title]". Default to the iterative chat loop so the author can refine results mid-build (best results, cheapest per pass); fall back to the server-side extractor only for unattended runs or manuscripts so large the loop will exhaust turn budget.
 ---
 
 # Story Bible
@@ -11,13 +11,30 @@ A "story bible" in StorytellerOS is the union of four worldbuilding tables: **ch
 
 When the user asks Claude to build a bible, the work is producing structured records for each entry — every character with their core_desire, core_fear, character_arc, etc.; every location with key_features, climate; every event with act and importance; every lore entry with rules_and_mechanics and origin_and_history.
 
-## Two paths — pick by source
+## Two paths — pick by user need, not just source
 
-**The decision is purely about the source of the manuscript text**, not the user's wording.
+The default is the **iterative chat loop**. The server-side extractor is the fallback for jobs the loop can't finish.
 
-### Path A — Uploaded manuscript (default, USE THIS WHENEVER POSSIBLE)
+### Path A — Iterative chat loop (DEFAULT)
 
-If the title already has an uploaded manuscript in STOS — check with `stos_title_manuscripts_list({ titleId })`, or look for `manuscript_storage_path` on the title — kick off the server-side pipeline in **one call**:
+This is the recommended path for almost every story-bible build. It runs entirely within the user's Claude Subscription, costs no API credits, and — most importantly — lets the author push back mid-build ("you missed Nora's mentor relationship", "this should be act-two, not act-three", "merge these two minor characters"). That conversational refinement is what produces a story bible the author actually wants to keep, instead of one that's "mostly right" with gaps they then have to clean up themselves.
+
+**Tell the user to switch to Sonnet** before starting. Opus burns through Subscription turn quota ~5× faster on extraction work; Sonnet handles the same job and leaves headroom for the iterative refinement. The model selector is at the top of the Claude conversation.
+
+The loop is documented in §3-§7 below. Keep "one record at a time" — see the no-shortcuts rule.
+
+**When this path struggles:** very large casts on a tight subscription tier (30+ characters → 8-15 locations → 10-20 events → 5-10 lore entries can exhaust a 5-hour Pro window if run on Opus). If the user reports the loop ran out of turns mid-build, either: switch them to Sonnet and resume from where it stopped, or escalate to Path B for the remaining records. A real prior incident (Deb 2026-05-15) saw the bible save characters but skip lore/events/locations because the agent got cut off mid-loop on Opus — that's the exact symptom that means "use Sonnet" or "switch to Path B for what's left."
+
+### Path B — Server-side extractor (fallback, NOT the default)
+
+Use this only when:
+- The user explicitly asks for an unattended/batch run, OR
+- The manuscript is very large (full novel, 80k+ words) and Path A on Sonnet still can't finish in the user's quota window, OR
+- Path A has already been tried and ran out of turn budget before completing
+
+**Warn the user before kicking it off:** the server extractor runs against their saved AI API key (NOT their Claude Subscription), so it costs real money per run. And it's a one-shot batch — if it misses entries or mis-categorizes a relationship, there's no iteration; the only recourse is to re-run, which double-charges the API key. One user spent $50 in a single book this way before the issue was understood.
+
+If the title has an uploaded manuscript in STOS — check with `stos_title_manuscripts_list({ titleId })`, or look for `manuscript_storage_path` on the title — kick off the server-side pipeline in **one call**:
 
 ```
 stos_titles_extract_story_bible({ titleId })
@@ -38,24 +55,11 @@ On `'failed'`, the result carries a `terminal_error` block with a ready-to-paste
 - `empty-output` — provider returned nothing usable; confirm the right file was uploaded
 - `rate-limit` — short-window throttle; retry after a minute
 
-On `'completed'`, summarise the per-kind counts from `result.created` / `result.merged` and remind the user that drafts are in Worldbuilding for review.
-
-**Why this is the default**: the per-entity loop in Path B reliably runs out of agent turn budget on a real novel (30+ characters → 8-15 locations → 10-20 events → 5-10 lore entries × ~2k tokens each, plus the loop tool-call overhead). Real users (Deb 2026-05-15) saw the bible "save characters but skip lore/events/locations" because the agent got cut off mid-loop. The server-side path doesn't have that ceiling — it chunks the manuscript per provider, runs each pass with raw prose, and dedupes results before persisting.
+On `'completed'`, summarise the per-kind counts from `result.created` / `result.merged` and remind the user that drafts are in Worldbuilding for review — they should still spot-check for missed relationships or mis-categorized acts before considering the bible done.
 
 After completion, still run the association-wiring step from §7 below (chapter/scene/series links) — the server-side extractor does the core persists, but cross-table junctions are the agent's job.
 
-### Path B — Chat-sourced bible (no uploaded manuscript)
-
-If the source is an outline, synopsis, or premise pasted into chat, the per-entity loop is the only option — there's no file for the server to read. Drop into the loop documented in §3-§7. The "no shortcuts" rule below still applies: one tool call per entry, no batching.
-
-```
-for each character in the source:
-  stos_characters_create({ fields: { character_name, role_in_story, ... } })
-```
-
-Same for locations, events, lore.
-
-## The no-shortcuts rule (Path B only)
+## The no-shortcuts rule (Path A only)
 
 **One record at a time.** Even if Claude could in principle assemble a JSON array of 30 characters and POST them in one call, don't — large sources trip context windows mid-batch and entries get truncated. Loop instead. The user explicitly asked for the fullest possible output and no shortcuts; this is enforced at the skill level, not by the tools.
 
