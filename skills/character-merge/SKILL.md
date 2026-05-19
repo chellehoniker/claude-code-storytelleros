@@ -1,6 +1,6 @@
 ---
 name: character-merge
-description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate characters in their story bible. Triggers on "merge characters", "dedupe characters", "I have two records for [name]", "consolidate Drake and Drake Kingston", "find duplicate characters", "clean up my characters".
+description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS specifically. Triggers on "merge characters", "dedupe characters", "I have two records for [name]", "consolidate Drake and Drake Kingston", "find duplicate characters", "clean up my characters". If the user mentions locations or lore in the same breath, use `worldbuilding-merge` instead — it covers all three kinds with the same workflow.
 ---
 
 # Character merge — cheap, server-side first
@@ -73,4 +73,6 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 
 ## Forward-looking
 
-Today only `characters` has `find_duplicates` + `get_many`. The same N+1 trap exists for `locations`, `lore`, and `events` — when those tools ship, this skill expands to cover them, or a sibling `worldbuilding-merge` skill takes over the broader scope. Until then, treat location / lore / event dedupe as out of scope for this skill and tell the user we'll have it soon.
+`stos_locations_find_duplicates` + `stos_locations_get_many` and `stos_lore_find_duplicates` + `stos_lore_get_many` now exist — the sibling `worldbuilding-merge` skill covers location and lore dedup using the same workflow shape as this skill. Use this skill for character-only sessions; use `worldbuilding-merge` when the user wants to clean up multiple worldbuilding kinds in one pass.
+
+Events do not yet have a duplicate-finder. If the user asks for event dedup, fall back to `stos_events_list` and compare event_name + event_date in the conversation — and tell them we'll have a proper tool soon.
