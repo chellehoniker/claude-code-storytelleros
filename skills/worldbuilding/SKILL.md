@@ -17,7 +17,7 @@ description: Use when the user wants to ADD or EDIT ONE character, location, lor
 
 ## Canonical field values — send these exactly
 
-The Story Bible tables have strict CHECK constraints. Sending anything other than the canonical value below silently drops the field — the rest of the record saves, but you'll have wasted tokens and the user will see a blank column in the UI. **Map synonyms to the canonical value before calling the tool. If a value can't be mapped, omit the field entirely — never invent, never stash the original somewhere else.**
+The Story Bible tables have strict CHECK constraints, and several columns (`aliases`, `family_group`, `key_features`, `tags`, `themes`, `story_framework`, …) are arrays. The MCP tools now enforce both in their input schema: a non-canonical enum value, or a bare string where an array is expected, is rejected immediately with a clear error listing the allowed shape — a wasted round-trip, not a silent failure. **Map synonyms to the canonical value below before calling the tool; pass array columns as real JSON arrays (`["a","b"]`), never a comma-joined string. If a value can't be mapped, omit the field entirely — never invent, never stash the original somewhere else.**
 
 | Field | Canonical values | Synonym → canonical |
 |---|---|---|
@@ -53,4 +53,4 @@ stos_characters_update({ id, fields: { backstory: 'updated paragraph...' } })
 - **Creating a duplicate.** If the user says "add Sasha to *Curses and Currents*", check `stos_characters_list` first — Sasha may already exist under another title and just need a `stos_worldbuilding_link`. If the user already knows there are duplicates, route them to the **`character-merge`** skill — it has a server-side duplicate finder that's dramatically cheaper than reviewing pairs in conversation.
 - **Saving a stub.** A character record with only `character_name` is technically valid but useless. Draft the full record before saving.
 - **Looping `_get` to compare multiple records.** Use `stos_characters_get_many` for ≥2 characters. For dedup work, use `character-merge`.
-- **Sending non-canonical enum values.** See the table above. The save will appear to succeed but the field will be dropped silently.
+- **Sending non-canonical enum values, or a string for an array column.** The tool input schema rejects both with an explicit error — map enum synonyms first (see the table above), and pass array columns as JSON arrays.

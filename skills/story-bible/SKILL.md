@@ -65,7 +65,7 @@ After completion, still run the association-wiring step from §7 below (chapter/
 
 ## Canonical field values — send these exactly
 
-The Story Bible tables have strict CHECK constraints. Sending anything other than the canonical value below silently drops the field — the rest of the record saves, but you'll have wasted tokens and the user will see a blank column in the UI. **Map synonyms to the canonical value before calling the tool. If a value can't be mapped, omit the field entirely — never invent, never stash the original somewhere else.**
+The Story Bible tables have strict CHECK constraints, and several columns (`aliases`, `family_group`, `key_features`, `tags`, `themes`, `story_framework`, `setting_features`, …) are arrays. The MCP tools now enforce both in their input schema: a non-canonical enum value, or a bare string where an array is expected, is rejected immediately with a clear error listing the allowed shape — a wasted round-trip, not a silent failure. **Map synonyms to the canonical value below before calling the tool; pass array columns as real JSON arrays (`["a","b"]`), never a comma-joined string. If a value can't be mapped, omit the field entirely — never invent, never stash the original somewhere else.**
 
 | Field | Canonical values | Synonym → canonical |
 |---|---|---|
@@ -165,7 +165,7 @@ If any single `_create` call failed mid-loop, surface the failure with the entry
 - **Skipping fields to save time.** If you have the information, save it. Truncating a character's `backstory` to a one-liner defeats the bible.
 - **Forgetting associations.** A character that isn't linked to any chapter or scene is dead weight — wire every connection the source implies.
 - **Forgetting the series-level links from Step 7a.** A lore entry or location without a `series_lore` / `series_locations` row will not appear under the series filter and the user will conclude the bible isn't connected.
-- **Sending non-canonical enum values.** Map first (see the *Canonical field values* table); if you can't map, omit the field. Sending "Deuteragonist" or "Act 1" silently drops the field at the DB CHECK constraint and burns retry tokens.
+- **Sending non-canonical enum values, or a string for an array column.** Map enum synonyms first (see the *Canonical field values* table); if you can't map, omit the field. Pass array columns as JSON arrays. The tool input schema rejects "Deuteragonist", "Act 1", or a comma-joined string with an explicit error — burning a retry round-trip.
 - **Sending `custom_fields`.** Invisible in the StorytellerOS UI for Cowork-completed records. Use only named columns.
 - **Pasting full record blocks inline before calling the tool.** The tool call carries the record — printed paragraphs just consume the user's Claude allowance.
 - **Drafting under the wrong pen name.** Same continuity hazard as `chapter-drafting`.
