@@ -5,12 +5,11 @@ description: Use when the user wants to start, stop, or review time spent writin
 
 # Time Tracking
 
-## Three related concepts
+## Two related concepts
 
 | Concept | What it is | Tools |
 |---|---|---|
-| **Time-tracking entry** | A timed work block (start + stop) | `stos_time_tracking_*` |
-| **Writing session** | A focused-work record (often pomodoro-style) | `stos_writing_sessions_*` |
+| **Time-tracking entry** | A timed work block — start + stop, optional word counts. Also called a "writing session"; it's the same record either way. | `stos_time_tracking_*` |
 | **Writing goal** | A target (words per day, hours per week, deadline) | `stos_writing_goals_*` |
 
 ## Flow: start / stop a timer

@@ -9,7 +9,7 @@ description: Use when the user mentions a specific pen name, has multiple pen na
 
 Authors who write under multiple pen names rely on StorytellerOS' pen-name separation: each pen name has its own books library, characters, locations, lore, calendar, finance ledger, tasks, and brand voice guides. The web app has a top-right dropdown to switch between them.
 
-In the plugin, every profile-scoped tool (`stos_titles_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, `stos_articles_list`, etc.) accepts an optional `penNameId` argument. **Without one, calls go to the user's active / primary pen name.** Under the hood the MCP layer forwards it as an `X-Pen-Name-Id` header to `/api/v1/*` — Claude only needs to pass the argument.
+In the plugin, every profile-scoped tool (`stos_titles_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, etc.) accepts an optional `penNameId` argument. **Without one, calls go to the user's active / primary pen name.** Under the hood the MCP layer forwards it as an `X-Pen-Name-Id` header to `/api/v1/*` — Claude only needs to pass the argument.
 
 ## When to use this skill
 

@@ -1,6 +1,6 @@
 ---
 name: sales-studio
-description: Use when the user wants to manage retailers, retailer links, title variations (ebook/paperback/audiobook), marketing assets, products, or reviews. Triggers on "add Amazon link for [title]", "list my retailers", "create a paperback variation", "add an audiobook ASIN", "list reviews for [title]", "log a marketing asset".
+description: Use when the user wants to manage retailers, retailer links, title variations (ebook/paperback/audiobook), marketing assets, or reviews. Triggers on "add Amazon link for [title]", "list my retailers", "create a paperback variation", "add an audiobook ASIN", "list reviews for [title]", "log a marketing asset".
 ---
 
 # Sales Studio
@@ -13,8 +13,9 @@ description: Use when the user wants to manage retailers, retailer links, title 
 | Title variation | `stos_title_variations_*` | A format of a title (ebook / paperback / hardback / audiobook / large-print / other) |
 | Retailer link | `stos_retailer_links_*` | Per-store URL + sales metadata, tied to a (title variation, retailer) pair |
 | Marketing asset | `stos_title_marketing_assets_*` | Per-title promo material (blurbs, copy, file URLs, platform tags) |
-| Product | `stos_products_*` | Storefront-listed offerings (separate from titles) |
 | Review | `stos_reviews_*` | Editorial or reader-feedback records |
+
+There is no separate "products" entity — a sellable product in StorytellerOS *is* a title variation. Use `stos_title_variations_*` for anything a reader can buy.
 
 ## Flow: add a retailer link
 

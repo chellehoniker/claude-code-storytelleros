@@ -258,16 +258,14 @@ stos_email_campaigns_send({ id })  // STOS sends, STOS tracks
 
 The bulk path is for read-only mirroring of sends that happened elsewhere — opens / clicks come from the source ESP's analytics, not from STOS's pixel (because STOS never put a pixel in those emails).
 
-## Articles, FAQs, webinars
+## Articles and webinars (read-only)
 
 ```js
-stos_articles_list()
-stos_articles_create({ fields: { title, slug, body_html, status, published_at } })
-stos_faqs_list()
-stos_faqs_create({ fields: { question, answer, category } })
-stos_webinars_list()
-stos_webinars_create({ fields: { title, description, start_at, end_at, registration_url } })
+stos_articles_list()   // recent Indie Author Magazine articles
+stos_webinars_list()   // Indie Author Training webinars and talks
 ```
+
+These two surface global content feeds — not author-owned records. They're read-only references with no create / update / delete: pull current articles or upcoming webinars into a campaign, a newsletter, or a recommendation. There is no FAQs tool — FAQ content is managed inside StorytellerOS directly.
 
 ## Anti-patterns
 
