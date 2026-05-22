@@ -1,6 +1,6 @@
 {
   "name": "storytelleros",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Skills and slash commands for StorytellerOS — write titles, build story bibles, run timers, capture tasks, log finance, manage your calendar, AND drive a connected WordPress site (posts, pages, shop products, media) from inside Claude Cowork. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Social work hands off to the Author Automations Social plugin (no double-hop).",
   "author": {
     "name": "StorytellerOS",
