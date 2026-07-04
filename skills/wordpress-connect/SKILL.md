@@ -9,22 +9,21 @@ The user connects their self-hosted WordPress site to StorytellerOS once, then e
 
 ## How the connection works
 
-Two methods, user picks one in **Settings → WordPress**:
+One method: the free **StorytellerOS plugin** on the user's site. The user installs `storytelleros.zip` (downloadable from Settings → WordPress), opens **StorytellerOS** in their WP sidebar, clicks **Generate token**, and pastes the `stos_` connection key into StorytellerOS Settings → WordPress. That powers everything — posts, pages, media, categories/tags, and shop management (WooCommerce / FluentCart).
 
-| Method | When to recommend |
-|---|---|
-| **Application Password** | The fast path. Built into WordPress, no plugin install. Lets the user manage posts, pages, categories, tags, and media. Suggest this first. |
-| **StorytellerOS plugin** | Only needed for shop management (WooCommerce / FluentCart products, orders, customers, coupons) and a few extras. The user installs the free `storytelleros.zip` on their site, generates a connection key, and pastes it into Settings → WordPress. |
+Older connections may still use a WordPress Application Password. They keep working, but the app no longer offers that method — when one plays up, the fix is switching it to a connection key (Settings → WordPress → Edit on that connection).
 
-Both methods are stored encrypted in the user's StorytellerOS account.
+## Multiple sites (one per pen name)
+
+Users can connect one WordPress site per pen name, plus an **account default** used by pen names without their own site. Every `stos_wp_*` tool takes an optional `penNameId` (get ids from `stos_pen_names_list`); omitted = account default. A pen name without its own site automatically uses the account default. If `stos_wp_site({ penNameId })` 404s with a pen-name message, that pen name id doesn't exist on the account.
 
 ## Checking the connection
 
 ```js
-stos_wp_site()
+stos_wp_site({ penNameId? })
 ```
 
-Returns site name, URL, WP version, plugin version (null if Application Password connection), and which commerce engines are installed (`hasWooCommerce`, `hasFluentCart`).
+Returns site name, URL, WP version, plugin version, and which commerce engines are installed (`hasWooCommerce`, `hasFluentCart`). Plugin version is only null for a legacy Application Password connection that hasn't been switched over yet.
 
 If the call returns 404 with "no WordPress site is connected", walk the user through Settings → WordPress.
 

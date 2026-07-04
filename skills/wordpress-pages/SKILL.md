@@ -17,6 +17,8 @@ stos_wp_pages_update({ id, fields: { ... } })
 stos_wp_pages_delete({ id, force })
 ```
 
+All tools take an optional `penNameId` — the user can connect one WordPress site per pen name plus an account default. Omit for the account default; pass a pen name id (from `stos_pen_names_list`) to act on that pen name's site. When the user has multiple pen names and it's ambiguous which site they mean, ask.
+
 Field shapes match `wordpress-posts` minus `categories`, `tags`, and `date` (pages don't schedule the same way).
 
 ## Patterns
