@@ -10,14 +10,14 @@ description: Use when the user wants to set up, configure, or connect Storytelle
 - A `stos_*` tool returns 401 / "unauthorized" / "Invalid client credentials"
 - The connector card shows "Connection has expired" or "Connection issue"
 - The `stos_*` tools aren't appearing at all in your tool list
-- User asks how to get started with StorytellerOS in Claude
+- User asks how to get started with StorytellerOS in Claude (for what-to-do-first coaching AFTER the connector works, hand off to the `getting-started` skill)
 
 ## How setup works
 
 Two parts, intentionally split:
 
 1. **The connector** — added manually via Cowork's "Add custom connector" dialog. Lives at `https://storytelleros.com/api/mcp` and authenticates with a Cowork connector credential pair the user generates from their dashboard. Cowork mints a Bearer token for each MCP request.
-2. **The plugin** — installed via the marketplace. Adds 15 skills (`stos-setup`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff`) and 7 slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`, `/stos-bible`, `/stos-finance`, `/stos-revise`). No connector bundled.
+2. **The plugin** — installed via the marketplace. Adds 28 skills (`stos-setup`, `getting-started`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `worldbuilding-merge`, `character-merge`, `markers`, `mentions`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff`, `blog-post-and-newsletter`, `wordpress-connect`, `wordpress-posts`, `wordpress-pages`, `wordpress-products`, `wordpress-media`, `wordpress-seo`, `wordpress-llm-optimization`) and 7 slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`, `/stos-bible`, `/stos-finance`, `/stos-revise`). No connector bundled.
 
 We deliberately do NOT bundle the connector in the plugin manifest. When a plugin auto-installs a connector, Cowork locks the credential fields, which blocks the user from pasting their own credentials. Splitting setup in two keeps those fields editable.
 
