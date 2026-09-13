@@ -1,0 +1,20 @@
+{
+  "name": "storytelleros",
+  "version": "0.7.0",
+  "description": "StorytellerOS writing and author-business skills. Connect the hosted STOS MCP server separately using OAuth and your existing credential pair.",
+  "author": { "name": "StorytellerOS", "email": "support@storytelleros.com", "url": "https://storytelleros.com" },
+  "homepage": "https://storytelleros.com/docs/chatgpt",
+  "repository": "https://github.com/chellehoniker/claude-code-storytelleros",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "StorytellerOS",
+    "shortDescription": "Writing and author-business workflows",
+    "longDescription": "Draft and revise manuscripts, organize story bibles, manage tasks, calendars and author-business records with your connected StorytellerOS account. The optional skills plugin and authenticated MCP connection are installed separately.",
+    "developerName": "StorytellerOS",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://storytelleros.com",
+    "defaultPrompt": ["List my pen names and titles without changing anything.", "Help me plan my next writing session.", "Show my current tasks."]
+  }
+}

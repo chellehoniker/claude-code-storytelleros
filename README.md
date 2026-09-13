@@ -1,4 +1,33 @@
-# StorytellerOS — Claude Plugin
+# StorytellerOS — Claude and ChatGPT Plugin
+
+## ChatGPT / Codex setup
+
+Use the existing STOS account and credential pairs. Claude connections stay
+unchanged; ChatGPT has its own OAuth endpoint on the same hosted MCP server.
+
+1. Add a custom **Streamable HTTP** MCP server at
+   `https://storytelleros.com/api/mcp/chatgpt`. Choose **Automatic/CIMD**, not
+   DCR. Leave bearer-token and header fields empty.
+2. Authenticate, sign in to StorytellerOS, select an existing credential pair,
+   and approve. Do not paste its secret into chat. Revoking a shared pair
+   disconnects both clients; a separate pair allows independent revocation.
+3. Add this GitHub marketplace and install **StorytellerOS** for skills.
+   With Codex CLI, run in your terminal:
+
+```sh
+codex plugin marketplace add https://github.com/chellehoniker/claude-code-storytelleros
+codex plugin add storytelleros@storytelleros
+```
+
+Open a new chat with the connection enabled and ask to list pen names without
+changing anything. The plugin does not auto-install the MCP connection.
+Desktop/CLI skill installs do not automatically install skills on ChatGPT web.
+Web custom connections depend on Developer mode and workspace policy.
+
+[Full ChatGPT instructions](https://storytelleros.com/docs/chatgpt).
+This package is not a claim of public ChatGPT directory approval.
+
+## Claude setup (unchanged)
 
 Drive your StorytellerOS workspace from inside Claude Code or Claude Cowork — drafting and revising chapters, generating full story bibles, looking up characters and lore, capturing tasks, running writing timers, logging expenses, and managing your calendar without leaving the conversation.
 

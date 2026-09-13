@@ -11,7 +11,7 @@
       "name": "storytelleros",
       "source": "./",
       "description": "Draft titles in Claude (screenplay / audiobook / novel / game — STOS calls them all 'titles'), generate full story bibles, capture tasks, run writing timers, log finance, manage your calendar, and lift sales/marketing assets — without leaving the conversation. Pairs with a StorytellerOS account; the connector is added separately so the credential fields stay editable. Social work routes to the Author Automations plugin.",
-      "version": "0.2.0"
+      "version": "0.7.0"
     }
   ]
 }

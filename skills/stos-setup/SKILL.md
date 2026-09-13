@@ -5,6 +5,51 @@ description: Use when the user wants to set up, configure, or connect Storytelle
 
 # StorytellerOS Setup
 
+## Choose the client first
+
+If the user is in **ChatGPT or Codex**, use the ChatGPT flow below and stop
+before the Claude-specific instructions. If they are in Claude, keep using
+the existing Claude flow. If the client is unclear, ask which app they are
+connecting. Installing skills alone does not authenticate either connection.
+
+### ChatGPT / Codex connection
+
+1. Reuse an existing active credential pair from
+   https://storytelleros.com/dashboard/settings/api-keys, or create a pair
+   there if needed. Leave any working Claude connection untouched. A separate
+   pair is optional for independent revocation, not required to add ChatGPT.
+2. In desktop/Codex plugin settings, add a custom MCP named **StorytellerOS**,
+   choose **Streamable HTTP**, and enter
+   `https://storytelleros.com/api/mcp/chatgpt`. Leave bearer-token, headers,
+   and environment variables empty. Choose **Automatic** or **CIMD**, not DCR.
+3. Click **Authenticate**. Sign in on storytelleros.com, select the existing
+   credential pair on the consent page, review access, and **Connect ChatGPT**.
+   Do not ask for passwords, client secrets, or API keys in chat. ChatGPT does
+   not need the pair's secret pasted anywhere; it stores and refreshes OAuth.
+4. Start a new chat with the STOS connection enabled. Discover available tools
+   if the client supports tool search, then call `stos_pen_names_list` as a
+   read-only check. Missing tools alone do not prove a missing connection.
+
+For ChatGPT web, custom connections require Developer mode and a supporting
+plan/workspace policy. Use the same MCP URL and OAuth/CIMD. Web skill installs
+are separate from desktop/CLI installs. Current user instructions:
+https://storytelleros.com/docs/chatgpt.
+
+If skills are missing, add the marketplace
+`https://github.com/chellehoniker/claude-code-storytelleros` and install
+**StorytellerOS**, where the client supports it. The terminal alternative is
+`codex plugin marketplace add https://github.com/chellehoniker/claude-code-storytelleros`
+then `codex plugin add storytelleros@storytelleros`. Run these in a terminal,
+not chat. Restart the desktop app and open a new chat.
+
+On an authentication error, retry Authenticate and check the selected pair's
+revocation status and the account's active subscription. Do not rotate or
+revoke a working Claude pair to fix a ChatGPT setup error. Revoking a shared
+pair disconnects both clients. STOS currently uses the same account access
+for both; do not invent per-credential pen-name permission controls.
+
+## Claude-specific setup
+
 ## When to Use
 - User says "set up storytelleros", "connect my workspace", "configure STOS"
 - A `stos_*` tool returns 401 / "unauthorized" / "Invalid client credentials"
