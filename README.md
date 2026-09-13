@@ -2,6 +2,9 @@
 
 ## ChatGPT / Codex setup
 
+Version 0.7.0 adds ChatGPT setup using the same skills and hosted STOS tools.
+Existing Claude installations keep their current connection and credentials.
+
 Use the existing STOS account and credential pairs. Claude connections stay
 unchanged; ChatGPT has its own OAuth endpoint on the same hosted MCP server.
 
@@ -26,6 +29,33 @@ Web custom connections depend on Developer mode and workspace policy.
 
 [Full ChatGPT instructions](https://storytelleros.com/docs/chatgpt).
 This package is not a claim of public ChatGPT directory approval.
+
+### Credentials and access
+
+- Create or reuse a credential pair in STOS Settings → API Keys & Connectors.
+  Select it during ChatGPT authorization; do not copy its secret into ChatGPT.
+- Authentication is stored and refreshed, not repeated for every tool call.
+  STOS still checks current account access and credential revocation.
+- ChatGPT exposes the same STOS MCP catalog as Claude. This release does not
+  introduce a separate pen-name permission system or a second hosted server.
+- Keep Claude's URL at `/api/mcp`; use `/api/mcp/chatgpt` for ChatGPT.
+- For independent disconnection, use separate credential pairs. Revoking a
+  shared pair disconnects both clients.
+
+### Troubleshooting
+
+- **DCR not supported:** choose Automatic/CIMD, not dynamic registration.
+- **Skills installed but no tools:** finish the separate MCP authentication,
+  enable the connection, and start a new chat.
+- **OAuth fails after consent:** confirm the server release and migration are
+  complete, then check account access and whether the selected pair was revoked.
+- **Enterprise domain restrictions unavailable:** this connection does not
+  implement OIDC; workspaces requiring it may block installation.
+- Share the error text with support, never passwords, secrets, or tokens.
+
+Client screens can change. See OpenAI's official
+[connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt)
+and [authentication reference](https://developers.openai.com/plugins/build/auth).
 
 ## Claude setup (unchanged)
 
@@ -84,8 +114,8 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 
 | Component | Triggers / Notes |
 |---|---|
-| **MCP tools** | ~80 `stos_*` tools mirroring `/api/v1/*` — full CRUD across titles, chapters, scenes, characters, locations, lore, events, tasks, calendars, time-tracking, finance, sales, marketing, settings. |
-| **Skills** | `stos-setup`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff` |
+| **MCP tools** | Supplied by the separately authenticated hosted connection, not bundled in this package. Both clients use the current STOS tool catalog. |
+| **Skills** | 28 shared skills for setup, writing, story bibles, tasks, time, finance, marketing, and WordPress. See the [skills directory](skills/) for the complete list. |
 | **Slash commands** | `/stos-task <text>`, `/stos-write <description>`, `/stos-time <start\|stop\|status>`, `/stos-search <query>`, `/stos-bible <title>`, `/stos-finance <income\|expense> <amount> <note>`, `/stos-revise <chapter> <feedback>` |
 
 ## Story bibles — built one entry at a time
@@ -102,7 +132,7 @@ This plugin does **not** post to social. Social is handled by the [Author Automa
 
 No double-hop, no STOS-side social proxy — the two plugins work side by side in the same conversation.
 
-## Authentication
+## Claude authentication
 
 Authentication is on the **connector** (added in Step 1 of Install), not the plugin. You paste a credential pair you generate from your StorytellerOS dashboard into the connector's Advanced settings.
 
