@@ -27,6 +27,18 @@ changing anything. The plugin does not auto-install the MCP connection.
 Desktop/CLI skill installs do not automatically install skills on ChatGPT web.
 Web custom connections depend on Developer mode and workspace policy.
 
+For ChatGPT web: enable Developer mode in Settings → Security and login, open
+[Plugins](https://chatgpt.com/plugins), select the plus button, and enter the
+ChatGPT MCP URL under Connection. Authenticate through StorytellerOS, review
+the discovered tools, and enable the connection in a new conversation. If your
+workspace does not offer custom connections or marketplace imports, ask its
+administrator; a desktop plugin installation does not enable web skills.
+
+The 28 skills are shared with Claude. The seven `/stos-*` slash commands below
+are Claude-specific shortcuts; describe the equivalent task in ordinary
+language in ChatGPT. Available actions depend on current STOS permissions and
+connected services, not merely on installing the plugin.
+
 [Full ChatGPT instructions](https://storytelleros.com/docs/chatgpt).
 This package is not a claim of public ChatGPT directory approval.
 
@@ -106,7 +118,7 @@ Or just describe what you want:
 
 > "Log a $400 expense for editor Sarah Marsh, category Editing, against *Curses and Currents*."
 
-> "Post about my new release on Instagram." → routes to the Author Automations plugin (see *Social work* below).
+> "Post about my new release on Instagram." → see the legacy social-skill caveat under *Social work* before testing.
 
 Claude pulls the relevant story bible, writes in the right pen name's voice, and saves work back to your workspace. You review before anything is finalized.
 
@@ -122,15 +134,22 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 
 The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own POST** — no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
 
-## Social work — handed off to Author Automations
+## Social work — current tools and legacy skill caveat
 
-This plugin does **not** post to social. Social is handled by the [Author Automations Social](https://authorautomations.social) plugin, which already has 22 `aa_*` tools across 15 platforms. When you ask Claude to post, schedule, or run a campaign, the `social-handoff` skill:
+The hosted STOS catalog now includes social and ads tools; see the
+[current Social Studio contract](https://storytelleros.com/docs/claude-cowork/social-handoff).
+However, the bundled legacy `social-handoff` skill still directs the assistant
+to a separate Reader Radius connection using `aa_*` tools. Until that skill is
+updated and tested, do not assume a social request will use the STOS connection.
+Its existing flow:
 
 1. Calls `stos_pen_names_get` to read the pen name's `aaProfileId` (set automatically by the AA ↔ STOS sync).
 2. Stops with a clear message if the pen name isn't connected to AA Social.
 3. Otherwise calls the matching `aa_*` tool with `profileId: aaProfileId`.
 
-No double-hop, no STOS-side social proxy — the two plugins work side by side in the same conversation.
+This is a legacy skill dependency, not a requirement for every STOS tool.
+Review the selected tool, account, content, schedule, and any spend before
+authorizing a social action.
 
 ## Claude authentication
 
@@ -140,18 +159,31 @@ Lost the secret? Generate a new pair from [Settings → API keys](https://storyt
 
 If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"* — the bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
 
-## Pairs with Author Automations Social
+## Optional Reader Radius connection
 
-Install both plugins side by side. StorytellerOS handles writing, knowledge, finance, calendar, and sales. Author Automations handles posts, campaigns, and scheduling. Both work in the same Cowork conversation — Claude routes social work to `aa_*` tools and writing/business work to `stos_*` tools.
+Reader Radius (formerly Author Automations Social) is a separate product at
+[readerradius.com](https://readerradius.com). Its connection is authenticated
+separately; installing StorytellerOS does not install or authorize it. See the
+legacy social-skill caveat above before testing combined workflows.
 
 ## Troubleshooting
 
 - **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros" — the `stos-setup` skill walks through generating fresh credentials and updating the connector.
 - **Tools not showing up at all:** the connector probably wasn't added (Step 1). Add it via Settings → Connectors → Add custom connector.
 - **Wrong pen name's data appearing:** see the `pen-names` skill — pass the `penNameId` argument on every call in a multi-step flow.
-- **Social handoff stops because pen name isn't connected:** open Author Automations and provision the pen name there; STOS picks up the link via webhook automatically.
+- **Social handoff asks for another plugin:** the legacy skill expects separate Reader Radius tools. See *Social work* above and the current STOS social-tool guide; do not paste credentials into chat to work around it.
 
 ## Updating
+
+### ChatGPT / Codex
+
+Use the marketplace update controls in the client where you installed
+StorytellerOS, then start a new conversation. Update the skills plugin and MCP
+metadata separately: in ChatGPT web, open Plugins, select the MCP connection,
+and choose Refresh. Reauthenticate if requested; do not generate a new pair
+just to update skills. Keep Claude's existing connection unchanged.
+
+See [OpenAI's connection and refresh guide](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 
 ### Claude Cowork
 
@@ -166,7 +198,9 @@ Settings → Plugins → three-dot menu next to the marketplace → toggle **Syn
 ## Requirements
 
 - An active [StorytellerOS](https://storytelleros.com) account
-- The Cowork connector added per Step 1 above
+- The authenticated connector for your client, installed separately from skills
+- A client/workspace that permits custom MCP connections and, for skills,
+  marketplace installation. Public ChatGPT directory approval is not implied.
 
 ## Support
 
