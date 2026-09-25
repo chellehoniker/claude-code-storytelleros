@@ -34,7 +34,7 @@ the discovered tools, and enable the connection in a new conversation. If your
 workspace does not offer custom connections or marketplace imports, ask its
 administrator; a desktop plugin installation does not enable web skills.
 
-The 28 skills are shared with Claude. The seven `/stos-*` slash commands below
+The 29 skills are shared with Claude. The seven `/stos-*` slash commands below
 are Claude-specific shortcuts; describe the equivalent task in ordinary
 language in ChatGPT. Available actions depend on current STOS permissions and
 connected services, not merely on installing the plugin.
@@ -142,7 +142,7 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 | Component | Triggers / Notes |
 |---|---|
 | **MCP tools** | Supplied by the separately authenticated hosted connection, not bundled in this package. Both clients use the current STOS tool catalog. |
-| **Skills** | 28 shared skills for setup, writing, story bibles, tasks, time, finance, marketing, and WordPress. See the [skills directory](skills/) for the complete list. |
+| **Skills** | 29 shared skills for setup, writing, story bibles, tasks, time, finance, sales, ads, marketing, and WordPress. See the [skills directory](skills/) for the complete list. |
 | **Slash commands** | `/stos-task <text>`, `/stos-write <description>`, `/stos-time <start\|stop\|status>`, `/stos-search <query>`, `/stos-bible <title>`, `/stos-finance <income\|expense> <amount> <note>`, `/stos-revise <chapter> <feedback>` |
 
 ## Story bibles — built one entry at a time
