@@ -253,6 +253,12 @@ Address, First name, Last name, Name, Status, Tags, Groups / Lists, Phone);
 tags and lists are matched by name on the pen name and created if missing.
 Re-running is safe: existing contacts are updated, not duplicated.
 
+Imports do NOT start automations by default: contacts are added to their
+tags and lists without entering any welcome sequence (or other tag/list
+automation) those would trigger. Pass `start_automations: true` (on the file,
+upload-link or row tool) only when the author explicitly wants imported
+contacts to go through those automations; ask if it's unclear.
+
 Only use `stos_email_contacts_import` (inline `contacts` rows, up to 10,000
 per call) for rows you built yourself, not for a file the author has.
 
