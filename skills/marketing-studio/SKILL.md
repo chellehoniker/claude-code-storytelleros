@@ -224,18 +224,43 @@ stos_email_campaigns_bulk_sends({
 //    alongside STOS-native campaigns.
 ```
 
-**Import a list of subscribers from MailerLite:**
+**Import a list of subscribers from MailerLite (or any CSV export):**
+
+Never read the CSV and re-type its rows into tool calls, and never loop
+`stos_email_contacts_create` per subscriber. Hand STOS the FILE; it imports
+the whole thing server-side (tested for 50–60k+ contacts, up to 250,000 rows /
+100 MB per file).
 
 ```js
-// For each subscriber:
-stos_email_contacts_create({ fields: {
-  email, first_name, last_name,
-  external_source: 'mailerlite',
-  external_id: 'ml_sub_id',
-  imported_at: '2026-01-10T...',
-}});
-// Then attach to the appropriate list/tag the same way.
+// 1. Pass the file itself (attached file, a public https link, or the text).
+const job = stos_email_contacts_import_file({
+  penNameId: '<pen>',              // which audience; else the primary pen name
+  file_url: 'https://…/subscribers.csv',   // or file / csv_text / csv_base64
+  external_source: 'MailerLite',   // stamped on every contact for provenance
+});
+
+// 1b. Can't pass the file at all? Get a one-time upload page instead and give
+//     the author the uploadUrl (works once, expires in an hour).
+const link = stos_email_contacts_import_upload_link({ penNameId: '<pen>', external_source: 'MailerLite' });
+
+// 2. Poll every 20–30 seconds until status is done or failed.
+stos_email_contacts_import_status({ job_id: job.id /* or link.jobId */ });
+// → { status, totalRows, processedRows, succeeded, failed, duplicates, percent, errors[] }
 ```
+
+Column names from common platforms are mapped automatically (Email / Email
+Address, First name, Last name, Name, Status, Tags, Groups / Lists, Phone);
+tags and lists are matched by name on the pen name and created if missing.
+Re-running is safe: existing contacts are updated, not duplicated.
+
+Imports do NOT start automations by default: contacts are added to their
+tags and lists without entering any welcome sequence (or other tag/list
+automation) those would trigger. Pass `start_automations: true` (on the file,
+upload-link or row tool) only when the author explicitly wants imported
+contacts to go through those automations; ask if it's unclear.
+
+Only use `stos_email_contacts_import` (inline `contacts` rows, up to 10,000
+per call) for rows you built yourself, not for a file the author has.
 
 **Log a historical event from an old send:**
 
