@@ -1,6 +1,6 @@
 {
   "name": "storytelleros",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "StorytellerOS writing and author-business skills. Connect the hosted STOS MCP server separately using OAuth and your existing credential pair.",
   "author": { "name": "StorytellerOS", "email": "support@storytelleros.com", "url": "https://storytelleros.com" },
   "homepage": "https://storytelleros.com/docs/chatgpt",
