@@ -1,6 +1,6 @@
 ---
 name: marketing-studio
-description: Use when the user wants to manage email lists, contacts, tags, email campaigns, articles, FAQs, or webinars. EXCLUDES social — social work routes to the Author Automations plugin via the `social-handoff` skill. Triggers on "add subscribers to [list]", "draft a newsletter", "send my latest campaign", "publish an article", "add a webinar".
+description: Use when the user wants to manage email lists, contacts, tags, email campaigns, articles, FAQs, or webinars. EXCLUDES social — social work uses the `social-handoff` skill (stos_social_* tools on the same connector). Triggers on "add subscribers to [list]", "draft a newsletter", "send my latest campaign", "publish an article", "add a webinar".
 ---
 
 # Marketing Studio
@@ -12,9 +12,9 @@ description: Use when the user wants to manage email lists, contacts, tags, emai
 | Email (lists, campaigns, sends) | `marketing-studio` (this) |
 | Articles / long-form posts | `marketing-studio` |
 | FAQs, webinars | `marketing-studio` |
-| Social posts / scheduling / campaigns | `social-handoff` → AA plugin |
+| Social posts / scheduling / campaigns | `social-handoff` (`stos_social_*`) |
 
-This skill never calls a STOS social tool. There isn't one.
+This skill never calls a social tool itself; hand social work to `social-handoff`.
 
 ## Email
 
@@ -294,7 +294,7 @@ These two surface global content feeds — not author-owned records. They're rea
 
 ## Anti-patterns
 
-- **Trying to post to social through `stos_*`.** There's no `stos_social_*` tool. Use the `social-handoff` skill.
+- **Posting to social from this skill.** Hand it to the `social-handoff` skill, which uses the `stos_social_*` tools.
 - **Sending a campaign with no `pen_name_id`.** Send will refuse it. Pen name drives sender identity and audience scope.
 - **Forgetting list_ids / tag_ids.** Audience resolves to zero.
 - **Treating unsubscribe as global.** It's per pen name — siblings under the same user are independent audiences.

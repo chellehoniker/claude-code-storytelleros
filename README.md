@@ -2,7 +2,10 @@
 
 ## ChatGPT / Codex setup
 
-Version 0.7.0 adds ChatGPT setup using the same skills and hosted STOS tools.
+Version 0.8.0: Social Studio and Ads Studio run on the StorytellerOS connector alone; the
+`social-handoff` and `ads-studio` skills use `stos_social_*` and `stos_ads_*` tools and no
+longer need a second connector or plugin. Version 0.7.0 added ChatGPT setup using the same
+skills and hosted STOS tools.
 Existing Claude installations keep their current connection and credentials.
 
 Use the existing STOS account and credential pairs. Claude connections stay
@@ -39,20 +42,11 @@ are Claude-specific shortcuts; describe the equivalent task in ordinary
 language in ChatGPT. Available actions depend on current STOS permissions and
 connected services, not merely on installing the plugin.
 
-### Complete setup: STOS + Reader Radius
+### One connector covers everything
 
-Install **both plugins and authenticate both MCP connections** in your chosen
-assistant:
-
-| Product | Plugin provides | MCP connection provides |
-| --- | --- | --- |
-| StorytellerOS | Writing, story-bible, and author-business skills | Access to your STOS workspace |
-| Reader Radius | Social campaign, posting, and scheduling skills | Access to your connected social accounts and campaigns |
-
-Follow the STOS instructions here and Reader Radius's Settings installation
-instructions at [readerradius.com](https://readerradius.com). Each product uses
-its own credentials. Enable both plugins and connections in the conversation;
-installing one does not install or authorize the other.
+The StorytellerOS connection covers writing, story bibles, your author business,
+Social Studio and Ads Studio. You do not need a second connector or plugin for
+social or ads work.
 
 [Full ChatGPT instructions](https://storytelleros.com/docs/chatgpt).
 This package is not a claim of public ChatGPT directory approval.
@@ -133,7 +127,7 @@ Or just describe what you want:
 
 > "Log a $400 expense for editor Sarah Marsh, category Editing, against *Curses and Currents*."
 
-> "Post about my new release on Instagram." → STOS supplies the title context and hands social work to the installed Reader Radius tools.
+> "Post about my new release on Instagram." → Claude pulls the title details and posts through Social Studio on the same connector.
 
 Claude pulls the relevant story bible, writes in the right pen name's voice, and saves work back to your workspace. You review before anything is finalized.
 
@@ -149,21 +143,20 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 
 The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own POST** — no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
 
-## Social work — intentional handoff to Reader Radius
+## Social and ads work on the same connector
 
-The `social-handoff` skill intentionally uses the Reader Radius plugin and MCP
-connection alongside STOS. This is the supported workflow in both Claude and
-ChatGPT. See the
-[two-product setup guide](https://storytelleros.com/docs/claude-cowork/social-handoff).
+The `social-handoff` skill runs Social Studio through the `stos_social_*` tools, and
+`ads-studio` runs Ads Studio through `stos_ads_*`. See
+[Social and Ads Studio in Claude](https://storytelleros.com/docs/claude-cowork/social-handoff).
 The skill:
 
-1. Calls `stos_pen_names_get` to read the pen name's `aaProfileId` (set automatically by the AA ↔ STOS sync).
-2. Stops with a clear message if the pen name isn't connected to Reader Radius.
-3. Otherwise calls the matching `aa_*` tool with `profileId: aaProfileId`.
+1. Resolves the pen name (`stos_pen_names_list`) and passes `penNameId` on every call.
+2. Stops with a clear message if the pen name has no social posting set up yet.
+3. Pulls title and voice details from StorytellerOS, then calls the matching
+   `stos_social_*` tool.
 
-STOS supplies the writing context; Reader Radius performs the social action.
-Review the selected tool, account, content, schedule, and any spend before
-authorizing a social action.
+Review the selected account, content, schedule, and any spend before authorizing a
+social or ads action.
 
 ## Claude authentication
 
@@ -173,19 +166,12 @@ Lost the secret? Generate a new pair from [Settings → API keys](https://storyt
 
 If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"* — the bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
 
-## Reader Radius connection for social workflows
-
-Reader Radius (formerly Author Automations Social) is a separate product at
-[readerradius.com](https://readerradius.com). Its connection is authenticated
-separately; installing StorytellerOS does not install or authorize it. Install
-both plugins and authenticate both MCP connections for the complete workflow.
-
 ## Troubleshooting
 
 - **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros" — the `stos-setup` skill walks through generating fresh credentials and updating the connector.
 - **Tools not showing up at all:** the connector probably wasn't added (Step 1). Add it via Settings → Connectors → Add custom connector.
 - **Wrong pen name's data appearing:** see the `pen-names` skill — pass the `penNameId` argument on every call in a multi-step flow.
-- **Social tools are missing:** verify that the Reader Radius plugin is installed, its MCP connection is authenticated, and both products are enabled in the conversation. The handoff to Reader Radius is expected; never paste credentials into chat.
+- **Social or ads tools are missing:** check that the StorytellerOS connector is connected and enabled in the conversation. Analytics and ads need the upgraded Social Studio tier on the account. Never paste credentials into chat.
 
 ## Updating
 

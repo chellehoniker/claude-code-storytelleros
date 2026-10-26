@@ -12,8 +12,8 @@ This is the highest-leverage WordPress / Marketing combo. The user gives you a t
 ```text
 1. Discovery       → confirm site is connected         (stos_wp_site)
 2. Draft post      → write title + body                (in-conversation)
-3. Featured image  → generate via Freepik              (aa_freepik_generate or
-                                                        the user's preferred provider)
+3. Featured image  → generate in Media Studio          (stos_media_generate, then
+                                                        stos_media_generation_status)
 4. Upload image    → push to WP media library          (stos_wp_media_create)
 5. Publish post    → save + publish on WP              (stos_wp_posts_create)
 6. Compose email   → newsletter using the same body    (stos_email_campaigns_create)
@@ -45,14 +45,15 @@ Default structure:
 
 ### 3. Generate featured image
 
-Use the Author Automations Freepik tool (or whichever image provider the user has configured per `stos_settings_api_keys_get`). Aim 16:9, evocative-not-literal.
+Use Media Studio on the StorytellerOS connector (it uses the image provider the user has configured). Aim 16:9, evocative-not-literal.
 
 ```js
-const img = await aa_freepik_generate({
+await stos_media_generate({
   prompt: "Watercolor sketch of a writer at dawn, soft pastel palette, 16:9",
-  // ...provider-specific options
 });
-const imageUrl = img.url; // public URL
+// poll until the item completes, then read its public URL
+const jobs = await stos_media_generation_status({});
+const imageUrl = /* the completed item's url */;
 ```
 
 ### 4. Upload to WP media library

@@ -108,9 +108,15 @@ Tell the user:
 
 > "You're all set. Try `/stos-task hello from claude` to mint a quick task, or just ask me to 'list my books', 'start a writing timer for [project]', or 'log an expense for [vendor]'."
 
-## Pairing with Author Automations Social
+## Social and ads use the same connector
 
-If the user has the Author Automations Social connector and plugin installed too, both work in the same Cowork conversation. StorytellerOS handles writing, knowledge, finance, calendar, and sales. AA Social handles all social posts, campaigns, and scheduling. After drafting a chapter or releasing a book, it's reasonable to suggest the user schedule promo via `aa_create_post` — StorytellerOS itself never wraps social.
+StorytellerOS handles writing, knowledge, finance, calendar, sales, Social Studio and
+Ads Studio through this one connector. After drafting a chapter or releasing a book,
+it's reasonable to suggest scheduling promo with the `social-handoff` skill
+(`stos_social_posts_create`) or planning ads with `ads-studio`. No second connector is
+needed. If the user also has a Reader Radius connector from before, StorytellerOS work
+doesn't use it; keep it only for Reader Radius-only features (WhatsApp, Google Business,
+broadcasts).
 
 ## Troubleshooting Reference
 
