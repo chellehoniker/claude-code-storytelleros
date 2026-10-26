@@ -74,9 +74,9 @@ Social OAuth happens in the browser — it cannot be completed over MCP.
 > Open **Settings → Connections** at storytelleros.com and connect Facebook,
 > Instagram, Threads, or Pinterest. Each takes one approval click.
 
-After connecting, scheduling works from Social Studio, and social posting from
-Claude routes through the Author Automations Social plugin (see the
-`social-handoff` skill — StorytellerOS itself never wraps social posts).
+After connecting, scheduling works from Social Studio, and Claude can post,
+schedule and run campaigns through the same StorytellerOS connector (see the
+`social-handoff` skill). Ads work the same way (`ads-studio`).
 
 ### 5. Email sending (unlocks Marketing Studio campaigns)
 StorytellerOS ships its own email engine — BYO SMTP, unlimited contacts, no

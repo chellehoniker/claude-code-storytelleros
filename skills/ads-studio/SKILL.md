@@ -5,7 +5,8 @@ description: Use when the user wants to plan, create, measure, or fix advertisin
 
 # Ads Studio
 
-Roughly 58 `stos_ads_*` tools, including eight for Amazon. This exists because
+Roughly 95 `stos_ads_*` tools, including eight for Amazon, all on the StorytellerOS
+connector (no second connector is needed for ads). This exists because
 without it an agent will reach for whichever one sounds closest and get an answer
 that is confidently wrong in one of five specific ways. Those five are the whole
 point of this document.
@@ -78,21 +79,25 @@ The house playbook is deterministic — it is not the model guessing. Give it th
 situation and it returns platform choice, campaign structure, targeting, bidding,
 what to test first, and the numbers at which to stop or scale.
 
-1. `stos_ads_plans_list` — is there already an adopted plan for this book?
-2. Create a plan with the situation brief: work type, genre, where the book sits
-   in the catalogue (first in series / mid / standalone / box set), how it is sold
-   (KU / wide / direct), and budget posture.
-3. Generate a version, then read it back. **Gaps are meaningful**: an area listed
+1. `stos_ads_strategy_plans_list` — is there already an adopted plan for this book?
+   (`stos_ads_capabilities` first if you don't know what is connected.)
+2. `stos_ads_strategy_plan_create` with the situation brief: work type, genre, where
+   the book sits in the catalogue (first in series / mid / standalone / box set), how
+   it is sold (KU / wide / direct), and budget posture.
+3. `stos_ads_strategy_plan_generate`, then read it back with
+   `stos_ads_strategy_plan_get`. **Gaps are meaningful**: an area listed
    in `gaps` is one where the playbook has NO opinion, and presenting a default
    there as a recommendation is the failure mode to avoid. Say the author must
    decide it.
-4. Adopt a version to make it the one in use. **An adopted plan is immutable** —
+4. `stos_ads_strategy_plan_adopt` to make a version the one in use. **An adopted plan is immutable** —
    changing your mind writes a new version rather than editing it, so the record
    of what was decided stays true. Never describe adoption as "updating" a plan.
 
-Four research reads support this, and all four cost nothing: keyword ideas, reach
-estimate, ad-library scan (what comparable books are running, in their own words),
-and review audit. The review audit is the best source of ad copy there is, because
+Four research reads support this, and all four cost nothing: keyword ideas
+(`stos_ads_strategy_keyword_ideas`), reach estimate
+(`stos_ads_strategy_reach_estimate`), ad-library scan
+(`stos_ads_strategy_ad_library_scan`, what comparable books are running, in their
+own words), and review audit (`stos_ads_strategy_review_audit`). The review audit is the best source of ad copy there is, because
 it is the words real readers already used.
 
 ## Flow: create an ad for a title
@@ -106,6 +111,18 @@ it is the words real readers already used.
 4. Tell the author the ads exist and are paused, and that starting them is theirs
    to do in the app. Do not offer to start them.
 
+## Flow: click tests
+
+`stos_ads_creative_hooks` and `stos_ads_creative_copy_per_ad` write the ideas;
+`stos_ads_test_runs_list` reads a running test; `stos_ads_test_run_judge` without
+`confirm` shows the results, and only after the author picks the winners do you call
+it again with `confirm: true`. Never choose winners yourself.
+
+## Flow: boost a published post
+
+`stos_ads_create` with `postId` (from `stos_social_posts_list`) makes a boost.
+Created paused like every other ad.
+
 ## When the numbers look wrong
 
 Work down this list. The first four are far more common than "the ads are bad",
@@ -114,7 +131,8 @@ and each one looks exactly like bad ads from the outside.
 1. **Spend but no sales.** Check tracking first:
    `stos_ads_tracking_links_list`, then `stos_ads_tracking_bridge_check` per link.
    A link that has never been checked is a link nobody has confirmed goes
-   anywhere. Then `stos_ads_tracking_verify` for pixels — a pixel that exists is
+   anywhere. The whole setup is in `stos_ads_tracking_setup_get`; Amazon
+   Attribution in `stos_ads_tracking_amazon`. Then `stos_ads_tracking_verify` for pixels — a pixel that exists is
    not a pixel that has fired.
 2. **Sales but no attributed spend.** The ASIN is probably unmapped.
    `stos_ads_title_mappings_list` and `stos_sales_mapping_overrides_list`. Ad
