@@ -79,8 +79,11 @@ When an author asks for help with ads, call `stos_ads_setup_status` first, and c
 it again after each step. It returns `{ pens, canEdit, canConnect }`. Each pen has
 four steps, each with a state (done, todo, skipped or info) and an ordered list of
 `actions` (tool plus a plain note). Pass `penNameId` for one pen name, or leave it
-out to see all of them. If `canEdit` or `canConnect` is false, explain the steps but
-do not try the actions that change things.
+out to see all of them. Two flags gate what you may do. Connecting accounts needs
+`canConnect`. Changing pixels, creating strategies or ads, and running the current-ads
+check need `canEdit`. A teammate who can edit has `canEdit: true` and
+`canConnect: false`, so they can do everything except connect. When a flag is false,
+explain the steps but do not try the actions it gates.
 
 Walk the steps in order, by these exact titles, and follow each step's `actions` in
 order. These are the same steps the author sees in the app.
@@ -143,8 +146,9 @@ Four research reads support this, and all four cost nothing: keyword ideas
 (`stos_ads_strategy_keyword_ideas`), reach estimate
 (`stos_ads_strategy_reach_estimate`), ad-library scan
 (`stos_ads_strategy_ad_library_scan`, what comparable books are running, in their
-own words; it covers ads shown in the UK and Ireland, and ads shown in the US are
-on Meta's own Ad Library site), and review audit (`stos_ads_strategy_review_audit`). The review audit is the best source of ad copy there is, because
+own words; the scan searches ads shown in the UK and Ireland by default and can
+search other EU countries. For ads shown only in the US, use Meta's own Ad Library
+site), and review audit (`stos_ads_strategy_review_audit`). The review audit is the best source of ad copy there is, because
 it is the words real readers already used.
 
 ## Flow: check my current ads
@@ -153,9 +157,9 @@ Call `stos_ads_optimize`. It reads live campaigns and returns actions to review.
 never changes anything. Give the author a plain verdict for each campaign: working,
 needs a look, or too early to tell. Use ordinary words, not ad-buyer jargon, and
 apply the five rules above, especially rule 5 (a small spend is too early to tell)
-and rule 1 (one currency at a time). If Amazon is the only thing connected here, say
-plainly that this check does not cover Amazon ads yet, and use
-`stos_ads_amazon_profitability` for those.
+and rule 1 (one currency at a time). Whenever Amazon is connected, say
+plainly that Amazon ads are not part of this check yet, and offer the separate Amazon
+profitability check (`stos_ads_amazon_profitability`) instead.
 
 ## Flow: create an ad for a title
 
