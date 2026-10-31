@@ -1,6 +1,6 @@
 ---
 name: worldbuilding
-description: Use when the user wants to ADD or EDIT ONE character, location, lore entry, or story-timeline event — without spinning up a full story-bible flow. Triggers on "add a character to [title]", "save this location to the bible", "create a new lore entry for [thing]", "update [character]'s backstory", "describe a place and save it". For merging or deduplicating, use the `character-merge` skill instead.
+description: Use when the user wants to ADD or EDIT ONE character, location, lore entry, or story-timeline event, without spinning up a full story-bible flow. Triggers on "add a character to [title]", "save this location to the bible", "create a new lore entry for [thing]", "update [character]'s backstory", "describe a place and save it". For merging or deduplicating, use the `character-merge` skill instead.
 ---
 
 # Worldbuilding — single entries

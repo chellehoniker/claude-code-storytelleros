@@ -1,6 +1,6 @@
 ---
 name: calendar
-description: Use when the user wants to add, find, or manage real-world calendar events — release dates, signings, deadlines, podcast recordings. Triggers on "add to my calendar", "what's on my calendar [date]", "schedule a [thing]", "block out [date] for [thing]". DOES NOT cover story-timeline events — see `timeline` for those.
+description: Use when the user wants to add, find, or manage real-world calendar events: release dates, signings, deadlines, podcast recordings. Triggers on "add to my calendar", "what's on my calendar [date]", "schedule a [thing]", "block out [date] for [thing]". DOES NOT cover story-timeline events, see `timeline` for those.
 ---
 
 # Calendar (user calendar)

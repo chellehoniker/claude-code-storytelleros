@@ -1,6 +1,6 @@
 ---
 name: character-merge
-description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS specifically. Triggers on "merge characters", "dedupe characters", "I have two records for [name]", "consolidate Drake and Drake Kingston", "find duplicate characters", "clean up my characters". If the user mentions locations or lore in the same breath, use `worldbuilding-merge` instead — it covers all three kinds with the same workflow.
+description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS specifically. Triggers on "merge characters", "dedupe characters", "I have two records for [name]", "consolidate Drake and Drake Kingston", "find duplicate characters", "clean up my characters". If the user mentions locations or lore in the same breath, use `worldbuilding-merge` instead, it covers all three kinds with the same workflow.
 ---
 
 # Character merge — cheap, server-side first

@@ -86,10 +86,10 @@ If the response has no `warnings` or `chapter_ids` fields, the server is an olde
 ## When something goes wrong
 
 - **Partial import (an error after some chapters were saved).** The error text ends with `(details: {"committed_chapter_ids": [...], "warnings": [...]})`, and the message names the chapter where it stopped.
-  1. Read `committed_chapter_ids`, then `stos_chapters_list({ bookId: titleId })` to confirm what actually landed.
+  1. Read `committed_chapter_ids`, then `stos_chapters_list({ bookId: titleId })` to confirm what actually landed. The chapter list is what counts; if the error has no details block (older server), it is the only record. Every chapter in `committed_chapter_ids` is already in the book, including one the message says "was added but its scenes may not have been saved". Ask the author to check that chapter in the app rather than importing it again.
   2. Tell the author which chapters are in and where it stopped. Their existing chapters were not touched.
   3. **Never re-upload the whole file.** That adds the saved chapters a second time, and front and back matter that were already saved get added again too.
-  4. The safe retry is a file holding only the chapters that didn't make it, without the front or back matter headings, uploaded with `append`. Ask the author before retrying.
+  4. The safe retry is a file holding only the chapters after the last one that landed, without the front or back matter headings, uploaded with `append`. Ask the author before retrying.
 - **"The manuscript has no text to import" (422):** the file has headings but no chapter text, or is empty. Ask the author to check they picked the right file.
 - **Paused (409 `STRUCTURE_OPS_PAUSED`):** nothing was written. Tell the author this kind of change is paused for now and their text is safe. Don't retry.
 - **Wrong file type or too large:** use the conversion steps in Step 2, or suggest splitting the book into two files and importing the second with `append`.
@@ -98,12 +98,14 @@ If the response has no `warnings` or `chapter_ids` fields, the server is an olde
 
 Sometimes an import leaves a chapter the author doesn't want, such as a duplicate. Chapter delete is two steps, and a copy of the chapter is saved first so it can be brought back.
 
+**Check first:** only use chapter delete if `stos_chapters_restore_deleted` is among your tools. If it isn't, the server has the older delete, which has no question step and keeps no copy. Don't call `stos_chapters_delete` at all; tell the author chapter delete isn't available from here yet and nothing was changed.
+
 1. Confirm with the author which chapter you mean (number and title).
 2. Call `stos_chapters_delete({ id })` **without** `confirm`. Nothing is deleted. The result is `{ confirmation_required: true, question }`: put that question to the author.
 3. Only if the author says yes, call `stos_chapters_delete({ id, confirm: true })`. The response includes a `revisionId`.
 4. To bring it back: `stos_chapters_restore_deleted({ titleId, revisionId })`. If its old chapter number is now taken, that call also returns a question; ask it, and call again with `confirm: true` only on a yes. Deleted chapters are also listed on the title's Revisions page in the app, with a Restore button.
 
-A 409 `TRY_AGAIN` means nothing was deleted; call again. If the server answers that chapter delete is paused (409 `STRUCTURE_OPS_PAUSED`), or `stos_chapters_restore_deleted` isn't among your tools, chapter delete isn't available yet: nothing changed, so tell the author that and don't look for another way to remove the chapter.
+A 409 `TRY_AGAIN` means nothing was deleted; call again. If the server answers that chapter delete is paused (409 `STRUCTURE_OPS_PAUSED`), nothing changed: tell the author it isn't available right now, and don't look for another way to remove the chapter.
 
 ## Anti-patterns
 

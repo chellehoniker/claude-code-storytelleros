@@ -1,6 +1,6 @@
 ---
 name: ads-studio
-description: Use when the user wants to plan, create, measure, or fix advertising — Amazon, Meta, Google, TikTok, LinkedIn, Pinterest, X or ChatGPT ads. Triggers on "how are my ads doing", "what's my ROAS", "which market should I cut", "start an ad for [title]", "why is my ad spend not showing sales", "check my tracking links", "work out an ad strategy", "which books should I advertise".
+description: Use when the user wants to plan, create, measure, or fix advertising: Amazon, Meta, Google, TikTok, LinkedIn, Pinterest, X or ChatGPT ads. Triggers on "how are my ads doing", "what's my ROAS", "which market should I cut", "start an ad for [title]", "why is my ad spend not showing sales", "check my tracking links", "work out an ad strategy", "which books should I advertise".
 ---
 
 # Ads Studio

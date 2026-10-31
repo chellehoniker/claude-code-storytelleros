@@ -1,6 +1,6 @@
 ---
 name: wordpress-seo
-description: Use when the user wants to improve search rankings for their WordPress content — audit or optimize titles, slugs, excerpts, headings, image alt text, internal links, or schema markup. Triggers on "SEO my post", "optimize this post for search", "audit my blog's SEO", "why isn't my post ranking", "add schema to my post", "fix my slugs".
+description: Use when the user wants to improve search rankings for their WordPress content: audit or optimize titles, slugs, excerpts, headings, image alt text, internal links, or schema markup. Triggers on "SEO my post", "optimize this post for search", "audit my blog's SEO", "why isn't my post ranking", "add schema to my post", "fix my slugs".
 ---
 
 # WordPress SEO

@@ -1,6 +1,6 @@
 ---
 name: getting-started
-description: Use when a user is new to StorytellerOS, asks "where do I start?", "what should I do first?", "help me get set up", or when you notice their account is nearly empty (no pen names, no books). Walks the top-level first-run tasks one at a time — add a book, connect socials, set up email sending — without firehosing.
+description: Use when a user is new to StorytellerOS, asks "where do I start?", "what should I do first?", "help me get set up", or when you notice their account is nearly empty (no pen names, no books). Walks the top-level first-run tasks one at a time (add a book, connect socials, set up email sending) without firehosing.
 ---
 
 # StorytellerOS Getting Started

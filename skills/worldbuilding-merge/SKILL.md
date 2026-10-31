@@ -1,6 +1,6 @@
 ---
 name: worldbuilding-merge
-description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS, LOCATIONS, or LORE in their story bible. Triggers on "merge locations", "dedupe lore", "I have two records for [place/thing]", "consolidate these characters", "find duplicate locations", "clean up my worldbuilding". For character-only merges, the older `character-merge` skill is still valid — this skill is the broader umbrella covering all three kinds.
+description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS, LOCATIONS, or LORE in their story bible. Triggers on "merge locations", "dedupe lore", "I have two records for [place/thing]", "consolidate these characters", "find duplicate locations", "clean up my worldbuilding". For character-only merges, the older `character-merge` skill is still valid, this skill is the broader umbrella covering all three kinds.
 ---
 
 # Worldbuilding merge — cheap, server-side first

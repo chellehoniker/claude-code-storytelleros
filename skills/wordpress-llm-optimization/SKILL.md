@@ -1,6 +1,6 @@
 ---
 name: wordpress-llm-optimization
-description: Use when the user wants their WordPress content optimized for AI search and assistants — being cited by ChatGPT/Claude/Perplexity/AI Overviews, "LLM SEO", "GEO", "AEO", answer engine optimization, or "make my site show up in AI answers". Triggers on "optimize for AI search", "LLM-friendly", "get cited by AI", "answer engine".
+description: Use when the user wants their WordPress content optimized for AI search and assistants: being cited by ChatGPT/Claude/Perplexity/AI Overviews, "LLM SEO", "GEO", "AEO", answer engine optimization, or "make my site show up in AI answers". Triggers on "optimize for AI search", "LLM-friendly", "get cited by AI", "answer engine".
 ---
 
 # WordPress LLM optimization
