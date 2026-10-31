@@ -27,7 +27,7 @@ In-universe story dates → `timeline` (events table, the worldbuilding one).
 stos_calendar_events_create({
   fields: {
     calendar_id,
-    title: 'Audiobook narration — Curses and Currents',
+    title: 'Audiobook narration: Curses and Currents',
     start_at: '2026-05-20T10:00:00-05:00',
     end_at: '2026-05-20T13:00:00-05:00',
     location: 'Studio Address',

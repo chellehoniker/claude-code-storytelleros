@@ -23,9 +23,10 @@ stos_tasks_list({ status: 'to-do', penNameId, bookId: titleId })
 
 Filter combinations:
 - `status` = `to-do` / `in-progress` / `completed`
-- `priority` = `high` / `medium` / `low`
 - `bookId`, `seriesId`, `penNameId` for scope
 - `item_type` if the user differentiates personal vs. project tasks
+
+There is no `priority` filter: list, then keep `high` / `medium` / `low` yourself.
 
 ## Flow: complete
 

@@ -14,6 +14,7 @@ description: Use when the user wants to ADD or EDIT ONE character, location, lor
 | Build out a whole title's bible | `story-bible` |
 | Extract everything from a manuscript | `story-bible` |
 | Merge / dedupe / consolidate characters | **`character-merge`** (never per-record `_get` in a loop) |
+| Merge / dedupe locations or lore | **`worldbuilding-merge`** |
 
 ## Canonical field values — send these exactly
 
@@ -46,11 +47,11 @@ stos_characters_get({ id })
 stos_characters_update({ id, fields: { backstory: 'updated paragraph...' } })
 ```
 
-**If you need TWO OR MORE records**, do NOT loop `_get`. For characters specifically, use `stos_characters_get_many({ ids: [...] })` — one round-trip instead of N. This matters because every MCP round-trip replays the full ~50KB tool schema; loading 10 characters via 10 separate `_get` calls vs. one bulk-get is the difference between 500KB and 50KB of overhead. The bulk-get tool caps at 100 ids per call. (Locations / lore / events don't yet have bulk-get equivalents — for those, the loop is currently unavoidable but try to keep the count small.)
+**If you need TWO OR MORE records**, do NOT loop `_get`. Use `stos_characters_get_many`, `stos_locations_get_many` or `stos_lore_get_many` with `{ ids: [...] }`: one round-trip instead of N. This matters because every MCP round-trip replays the full ~50KB tool schema; loading 10 characters via 10 separate `_get` calls vs. one bulk-get is the difference between 500KB and 50KB of overhead. The bulk-get tools cap at 100 ids per call. (Events don't have a bulk-get yet; for those, keep the loop small.)
 
 ## Anti-patterns
 
 - **Creating a duplicate.** If the user says "add Sasha to *Curses and Currents*", check `stos_characters_list` first — Sasha may already exist under another title and just need a `stos_worldbuilding_link`. If the user already knows there are duplicates, route them to the **`character-merge`** skill — it has a server-side duplicate finder that's dramatically cheaper than reviewing pairs in conversation.
 - **Saving a stub.** A character record with only `character_name` is technically valid but useless. Draft the full record before saving.
-- **Looping `_get` to compare multiple records.** Use `stos_characters_get_many` for ≥2 characters. For dedup work, use `character-merge`.
+- **Looping `_get` to compare multiple records.** Use the `_get_many` tools for 2 or more characters, locations or lore entries. For dedup work, use `character-merge` or `worldbuilding-merge`.
 - **Sending non-canonical enum values, or a string for an array column.** The tool input schema rejects both with an explicit error — map enum synonyms first (see the table above), and pass array columns as JSON arrays.

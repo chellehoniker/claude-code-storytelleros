@@ -1,7 +1,10 @@
-# StorytellerOS — Claude and ChatGPT Plugin
+# StorytellerOS: Claude and ChatGPT Plugin
 
 ## ChatGPT / Codex setup
 
+Version 0.10.0: a new `manuscript-import` skill brings a .docx or Markdown manuscript into a
+title and first asks whether to also build the story bible; markers now use notes, and skills
+that saved prose with the wrong tool now use `stos_scenes_set_content`.
 Version 0.8.0: Social Studio and Ads Studio run on the StorytellerOS connector alone; the
 `social-handoff` and `ads-studio` skills use `stos_social_*` and `stos_ads_*` tools and no
 longer need a second connector or plugin. Version 0.7.0 added ChatGPT setup using the same
@@ -37,7 +40,7 @@ the discovered tools, and enable the connection in a new conversation. If your
 workspace does not offer custom connections or marketplace imports, ask its
 administrator; a desktop plugin installation does not enable web skills.
 
-The 29 skills are shared with Claude. The seven `/stos-*` slash commands below
+The 30 skills are shared with Claude. The seven `/stos-*` slash commands below
 are Claude-specific shortcuts; describe the equivalent task in ordinary
 language in ChatGPT. Available actions depend on current STOS permissions and
 connected services, not merely on installing the plugin.
@@ -80,15 +83,15 @@ and [authentication reference](https://developers.openai.com/plugins/build/auth)
 
 ## Claude setup (unchanged)
 
-Drive your StorytellerOS workspace from inside Claude Code or Claude Cowork — drafting and revising chapters, generating full story bibles, looking up characters and lore, capturing tasks, running writing timers, logging expenses, and managing your calendar without leaving the conversation.
+Drive your StorytellerOS workspace from inside Claude Code or Claude Cowork: drafting and revising chapters, importing manuscripts, generating full story bibles, looking up characters and lore, capturing tasks, running writing timers, logging expenses, and managing your calendar without leaving the conversation.
 
-> StorytellerOS calls long-form works **titles**, not books — that covers novels, screenplays, audiobook scripts, games, and novellas equally.
+> StorytellerOS calls long-form works **titles**, not books. That covers novels, screenplays, audiobook scripts, games, and novellas equally.
 
 ## Install
 
 The plugin ships **skills and slash commands**. The MCP connector itself is added separately so the credential fields stay editable. Two short steps:
 
-### Step 1 — Add the connector
+### Step 1: Add the connector
 
 In Cowork (or Claude Desktop): **Settings → Connectors → Add custom connector**
 
@@ -100,7 +103,7 @@ In Cowork (or Claude Desktop): **Settings → Connectors → Add custom connecto
 
 The connector authenticates immediately and the `stos_*` tools become available.
 
-### Step 2 — Install the plugin (for skills + slash commands)
+### Step 2: Install the plugin (for skills + slash commands)
 
 In any Claude Code or Cowork session:
 
@@ -109,7 +112,7 @@ In any Claude Code or Cowork session:
 /plugin install storytelleros@storytelleros
 ```
 
-This adds the conversational skills (see the table below) and the `/stos-*` slash commands. No connector is bundled — Step 1 already covers that.
+This adds the conversational skills (see the table below) and the `/stos-*` slash commands. No connector is bundled; Step 1 already covers that.
 
 ## Quick start
 
@@ -119,9 +122,11 @@ This adds the conversational skills (see the table below) and the `/stos-*` slas
 
 Or just describe what you want:
 
-> "Draft chapter 4 of my Indie Annie cozy — the previous chapter ended with the cat knocking the urn over."
+> "Draft chapter 4 of my Indie Annie cozy. The previous chapter ended with the cat knocking the urn over."
 
-> "Build a full story bible for *Curses and Currents* from the manuscript I just uploaded."
+> "Import my manuscript into *Curses and Currents*." → Claude first asks whether to just store it or also build the story bible.
+
+> "Build a full story bible for *Curses and Currents* from the manuscript I just imported."
 
 > "Start a writing timer for the Stardew prequel."
 
@@ -136,12 +141,12 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 | Component | Triggers / Notes |
 |---|---|
 | **MCP tools** | Supplied by the separately authenticated hosted connection, not bundled in this package. Both clients use the current STOS tool catalog. |
-| **Skills** | 29 shared skills for setup, writing, story bibles, tasks, time, finance, sales, ads, marketing, and WordPress. See the [skills directory](skills/) for the complete list. |
+| **Skills** | 30 shared skills for setup, writing, manuscript import, story bibles, tasks, time, finance, sales, ads, email, and WordPress. See the [skills directory](skills/) for the complete list. |
 | **Slash commands** | `/stos-task <text>`, `/stos-write <description>`, `/stos-time <start\|stop\|status>`, `/stos-search <query>`, `/stos-bible <title>`, `/stos-finance <income\|expense> <amount> <note>`, `/stos-revise <chapter> <feedback>` |
 
-## Story bibles — built one entry at a time
+## Story bibles, built one entry at a time
 
-The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own POST** — no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
+The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own save**: no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
 
 ## Social and ads work on the same connector
 
@@ -164,13 +169,13 @@ Authentication is on the **connector** (added in Step 1 of Install), not the plu
 
 Lost the secret? Generate a new pair from [Settings → API keys](https://storytelleros.com/dashboard/settings/api-keys), then update the connector in Cowork: Settings → Connectors → click the connector → paste the new credentials → Save. The old pair stays revocable from the same Settings card.
 
-If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"* — the bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
+If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"*. The bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
 
 ## Troubleshooting
 
-- **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros" — the `stos-setup` skill walks through generating fresh credentials and updating the connector.
+- **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros". The `stos-setup` skill walks through generating fresh credentials and updating the connector.
 - **Tools not showing up at all:** the connector probably wasn't added (Step 1). Add it via Settings → Connectors → Add custom connector.
-- **Wrong pen name's data appearing:** see the `pen-names` skill — pass the `penNameId` argument on every call in a multi-step flow.
+- **Wrong pen name's data appearing:** see the `pen-names` skill and pass the `penNameId` argument on every call in a multi-step flow.
 - **Social or ads tools are missing:** check that the StorytellerOS connector is connected and enabled in the conversation. Analytics and ads need the upgraded Social Studio tier on the account. Never paste credentials into chat.
 
 ## Updating

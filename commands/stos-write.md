@@ -8,4 +8,4 @@ allowed-tools: [Bash, Read, Write]
 
 Draft or expand the following: $ARGUMENTS
 
-Pull relevant story-bible context first (book, characters, locations, lore) via `stos_titles_get`, `stos_characters_list`, etc., then draft in the pen name's voice. Save the result with `stos_chapters_update` or `stos_scenes_update` after the user reviews.
+Follow the `chapter-drafting` skill. Pull relevant story-bible context first (book, characters, locations, lore) via `stos_titles_get`, `stos_characters_list`, etc., and read existing prose with `stos_scenes_get_content`, then draft in the pen name's voice. After the user reviews, save the prose with `stos_scenes_set_content` (a new chapter already has an empty Scene 1 to write into).

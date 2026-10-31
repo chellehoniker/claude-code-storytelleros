@@ -1,11 +1,11 @@
 ---
 name: blog-post-and-newsletter
-description: Use when the user wants to publish a blog post AND turn it into a newsletter in one step. The flagship WordPress + Marketing flow. Triggers on "write and send a blog post about X", "blog this and email the list", "draft a post and a newsletter on X", "publish to WP and send to my readers".
+description: Use when the user wants to publish a blog post AND turn it into a newsletter in one step. The flagship WordPress + Email Studio flow. Triggers on "write and send a blog post about X", "blog this and email the list", "draft a post and a newsletter on X", "publish to WP and send to my readers".
 ---
 
 # Blog post → newsletter (flagship composite flow)
 
-This is the highest-leverage WordPress / Marketing combo. The user gives you a topic; you draft once, publish to WordPress with a featured image, then queue the newsletter pointing at the published URL — without copy-pasting between tools.
+This is the highest-leverage WordPress + Email Studio combo. The user gives you a topic; you draft once, publish to WordPress with a featured image, then queue the newsletter pointing at the published URL — without copy-pasting between tools.
 
 ## The pipeline
 
@@ -20,7 +20,7 @@ This is the highest-leverage WordPress / Marketing combo. The user gives you a t
 7. Confirm         → show user the WP URL + draft id
 ```
 
-Skip steps the user explicitly opts out of (e.g. "no image" → skip 3-4; "save as draft" → set status `draft` in step 5).
+Skip steps the user explicitly opts out of (e.g. "no image" → skip 3-4). The post saves as a draft unless the user says to publish; then set status `publish` in step 5.
 
 ## Step-by-step
 
@@ -49,11 +49,14 @@ Use Media Studio on the StorytellerOS connector (it uses the image provider the 
 
 ```js
 await stos_media_generate({
-  prompt: "Watercolor sketch of a writer at dawn, soft pastel palette, 16:9",
+  taskType: "image",
+  prompt: "Watercolor sketch of a writer at dawn, soft pastel palette",
+  sizes: [/* at least one platform size key; images are refused without one */],
 });
-// poll until the item completes, then read its public URL
+// poll until the job completes; the finished image then appears in the media library
 const jobs = await stos_media_generation_status({});
-const imageUrl = /* the completed item's url */;
+const assets = await stos_media_assets_list({ source: "generated", kind: "image" });
+const imageUrl = /* the new asset's public url */;
 ```
 
 ### 4. Upload to WP media library
@@ -63,7 +66,7 @@ const media = await stos_wp_media_create({
   fields: {
     url: imageUrl,
     alt: "Watercolor sketch of a writer at dawn",
-    title: "Featured image — " + postTitle,
+    title: "Featured image: " + postTitle,
   }
 });
 ```
@@ -76,7 +79,7 @@ const post = await stos_wp_posts_create({
     title: postTitle,
     content: postHtml,
     excerpt: postExcerpt,
-    status: "publish",         // user opt-out → "draft"
+    status: "draft",           // publish only after the user says so
     featured_media: media.id,
     tags: postTags,            // string[]
     categories: postCategoryIds, // number[] — list via stos_wp_categories_list first
@@ -90,9 +93,11 @@ const wpUrl = post.link; // user-facing URL
 ```js
 stos_email_campaigns_create({
   fields: {
-    subject: postTitle,
-    preview_text: postExcerpt,
-    body_html: `${postHtml}<p><a href="${wpUrl}">Read the full post on the blog →</a></p>`,
+    campaign_name: postTitle,   // required
+    pen_name_id: penNameId,     // required to send; the sender comes from the pen name
+    subject_line: postTitle,
+    preheader: postExcerpt,
+    email_body_html: `${teaserHtml /* the lede + a paragraph, not the whole post */}<p><a href="${wpUrl}">Read the full post on the blog →</a></p>`,
     list_ids: defaultListIds,   // ask user OR pull "Main list" via stos_email_lists_list
   }
 });
@@ -104,7 +109,7 @@ The campaign starts as a draft. Confirm with the user before sending — never a
 
 Reply with:
 - The published post URL
-- The newsletter campaign ID + a "Send when ready in Marketing Studio → Email Campaigns" line
+- The newsletter's name + a "Send when ready in Email Studio → Campaigns" line
 
 ## Decision points to surface
 
@@ -117,12 +122,12 @@ Before running silently, confirm:
 | Tags | Up to 5 you infer from content. Confirm. |
 | Image style | Watercolor / soft / brand-matching when no preference. |
 | Newsletter list | "Main list" if exactly one obvious match; otherwise ask. |
-| Send newsletter or save as draft? | Always draft. The user sends from Marketing Studio. |
+| Send newsletter or save as draft? | Always draft. The user sends from Email Studio. |
 
 ## Anti-patterns
 
 - Do not send the newsletter automatically. The user reviews and sends.
-- Do not skip the upload step. Linking directly to STOS-hosted images breaks when the URL expires (this was a real production bug fixed for D2R; same pattern applies anywhere we cross-domain to a private storage URL).
+- Do not skip the upload step. Linking directly to a StorytellerOS-hosted image can break when its link expires; the copy in the WordPress media library is the one to use.
 - Do not auto-create new categories. If the user mentions one that doesn't exist, ask before creating with `stos_wp_categories_create`.
 - Do not stuff the newsletter body with the entire post. A teaser + "read more →" link converts better and respects the WP site as the canonical home.
 

@@ -8,4 +8,4 @@ allowed-tools: [Bash, Read, Write]
 
 Capture this as a task in StorytellerOS: $ARGUMENTS
 
-Follow the quick-task-capture skill: extract a short title, optional description, and call `stos_tasks_create`. Confirm the task ID back to the user.
+Follow the quick-task-capture skill: extract a short title, optional description, and call `stos_tasks_create({ fields: { task_name, description } })`. Confirm the task ID back to the user.

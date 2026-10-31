@@ -17,24 +17,24 @@ description: Use when the user wants to start, stop, or review time spent writin
 ```js
 stos_time_tracking_start({ penNameId, bookId: titleId, chapterId, note: 'Drafting' })
 // later
-stos_time_tracking_stop({ id })  // sets ended_at = now
+stos_time_tracking_stop({ id })  // sets end_time = now
 ```
 
 If the user doesn't specify a pen name + title, ask which they're tracking against (or default to their active one).
 
 ## Flow: log a completed session
 
-If the user worked offline and wants to log retroactively, use `stos_time_tracking_create` directly with both `started_at` and `ended_at` set.
+If the user worked offline and wants to log retroactively, use `stos_time_tracking_create({ fields: { start_time, end_time, notes } })` with both times set (ISO timestamps).
 
 ## Flow: review
 
 For "how much time did I spend on [X]":
 
 ```js
-stos_time_tracking_list({ penNameId, bookId: titleId })
+stos_time_tracking_list({ penNameId, limit: 'all' })
 ```
 
-Sum the (`ended_at` − `started_at`) deltas and report. If the user wants a per-day breakdown, group locally.
+The list has no title filter, so narrow to the title yourself where the entries carry it. Sum the (`end_time` − `start_time`) differences and report. If the user wants a per-day breakdown, group locally.
 
 ## Pomodoro settings
 
@@ -51,7 +51,7 @@ Goal-tracking is a separate flow:
 
 ```js
 stos_writing_goals_list()
-stos_writing_goals_create({ fields: { ... } })
+stos_writing_goals_create({ fields: { goal_name, goal_type: 'daily', target_words: 1500, start_date } })
 ```
 
 Use this when the user says "set a goal of 1500 words/day" or "I'm aiming to finish by [date]".

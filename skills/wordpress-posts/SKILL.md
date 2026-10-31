@@ -14,7 +14,7 @@ stos_wp_posts_list({ status, search, page, per_page })
 stos_wp_posts_get({ id })
 stos_wp_posts_create({ fields: { title, content, excerpt, slug, status, date, categories, tags, featured_media } })
 stos_wp_posts_update({ id, fields: { ... } })
-stos_wp_posts_delete({ id, force })   // omit force or pass false to trash; force=true to permanently delete
+stos_wp_posts_delete({ id })   // moves the post to WordPress trash; permanent deletion is done in WordPress itself
 ```
 
 All tools take an optional `penNameId` — the user can connect one WordPress site per pen name plus an account default. Omit for the account default; pass a pen name id (from `stos_pen_names_list`) to act on that pen name's site. When the user has multiple pen names and it's ambiguous which site they mean, ask.

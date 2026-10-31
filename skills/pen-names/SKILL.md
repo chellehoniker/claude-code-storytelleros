@@ -9,7 +9,7 @@ description: Use when the user mentions a specific pen name, has multiple pen na
 
 Authors who write under multiple pen names rely on StorytellerOS' pen-name separation: each pen name has its own books library, characters, locations, lore, calendar, finance ledger, tasks, and brand voice guides. The web app has a top-right dropdown to switch between them.
 
-In the plugin, every profile-scoped tool (`stos_titles_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, etc.) accepts an optional `penNameId` argument. **Without one, calls go to the user's active / primary pen name.** Under the hood the MCP layer forwards it as an `X-Pen-Name-Id` header to `/api/v1/*` — Claude only needs to pass the argument.
+In the plugin, every profile-scoped tool (`stos_titles_list`, `stos_characters_list`, `stos_tasks_create`, `stos_time_tracking_start`, etc.) accepts an optional `penNameId` argument. **Without one, calls go to the user's active / primary pen name.** Just pass the argument.
 
 ## When to use this skill
 
@@ -34,7 +34,7 @@ Call `stos_pen_names_list` once. It returns:
 
 ### 2. Match the user's intent to a pen name
 
-If the user said "draft a chapter for Indie Annie" and you see a pen name "Indie Annie," that's the match. If the match is ambiguous, ask the user to confirm: "I see two pen names — chelle and Indie Annie. Which one should this go under?"
+If the user said "draft a chapter for Indie Annie" and you see a pen name "Indie Annie," that's the match. If the match is ambiguous, ask the user to confirm: "I see two pen names: chelle and Indie Annie. Which one should this go under?"
 
 ### 3. Pass the pen-name selector on every subsequent profile-scoped call
 
@@ -44,8 +44,8 @@ stos_titles_list({})  // → primary pen name's books
 
 // After
 stos_titles_list({ penNameId: "pn_def456..." })  // → Indie Annie's books
-stos_chapters_update({ penNameId: "pn_def456...", chapterId, content })
-stos_tasks_create({ penNameId: "pn_def456...", title: "..." })
+stos_characters_list({ penNameId: "pn_def456..." })
+stos_tasks_create({ penNameId: "pn_def456...", fields: { task_name: "..." } })
 ```
 
 The selector doesn't carry across calls automatically. If the user is working in a single pen name for a multi-step flow (drafting several chapters, planning a series), include it on EVERY tool call in the sequence.
@@ -71,6 +71,6 @@ Story bible reads (`stos_characters_list`, `stos_locations_list`, `stos_lore_lis
 3. Call `stos_chapters_list({ penNameId, bookId: titleId })` — find chapter 3 (or the next slot)
 4. Call `stos_characters_list({ penNameId })` and `stos_locations_list({ penNameId })` — load story-bible context
 5. Draft the chapter in the cozy voice, given the urn cliffhanger
-6. Show the draft to the user, then on approval `stos_chapters_update({ id: chapterId, fields: { ... } })`
+6. Show the draft to the user, then on approval save the prose with `stos_scenes_set_content` (see the `chapter-drafting` skill)
 
 If the selector is omitted on any of those calls, it'd go to the primary pen name — wrong identity, wrong story bible, wrong voice.

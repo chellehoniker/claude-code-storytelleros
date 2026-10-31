@@ -59,7 +59,7 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 >
 > Do you want me to merge any of these? Note that the Kat group has three records and the Eric pair might be intentional if one is a younger version.
 >
-> **User:** Merge the Drake pair and the Kat group. Eric is fine — separate.
+> **User:** Merge the Drake pair and the Kat group. Eric is fine, keep him separate.
 >
 > **You:** *(call `stos_characters_get_many({ ids: [drake1, drake2, kat1, kat2, kat3] })` — ONE call for all five.)*
 >

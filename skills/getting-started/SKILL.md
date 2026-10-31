@@ -9,7 +9,7 @@ description: Use when a user is new to StorytellerOS, asks "where do I start?", 
 - User just connected StorytellerOS and asks what to do
 - User says "getting started", "onboard me", "set up my account", "what now?"
 - A tool call reveals an empty account (0 pen names or 0 books) and the user seems unsure where to begin
-- User asks how to "unlock" a studio (Project, Social, Marketing)
+- User asks how to "unlock" a studio (Project, Social, Email)
 
 ## The one rule: one step at a time
 
@@ -62,16 +62,22 @@ Terminology guard: a **variation** is a FORMAT (ebook/paperback/hardcover/
 audiobook). An **edition** is a VERSION (1st, revised). Never say "edition"
 for a format.
 
-### 3. Story bible — the "wow" moment
-Once a book exists and a manuscript is attached, offer the story bible: you
-can extract characters, locations, lore, and timeline from the manuscript in
-conversation and write them into StorytellerOS. See the `story-bible` skill.
-This is the moment new users fall in love — offer it early.
+### 3. Manuscript and story bible: the "wow" moment
+Once a book exists, offer to bring the manuscript in. Before uploading, ask
+the same question the `manuscript-import` skill asks:
+
+> "Do you want me to just import and store the manuscript, or also build the
+> story bible (characters, places, events and lore) from it?"
+
+Then follow the `manuscript-import` skill for the upload. If the author says
+yes to the story bible, follow the `story-bible` skill after the import
+succeeds. Never start the story bible without that yes. This is the moment
+new users fall in love, so offer it early.
 
 ### 4. Connect socials (unlocks Social Studio)
 Social OAuth happens in the browser — it cannot be completed over MCP.
 
-> Open **Settings → Connections** at storytelleros.com and connect Facebook,
+> Open **Settings → Social Studio** at storytelleros.com and connect Facebook,
 > Instagram, Threads, or Pinterest. Each takes one approval click.
 
 After connecting, scheduling works from Social Studio, and Claude can post,
@@ -82,29 +88,29 @@ For ads, call `stos_ads_setup_status` first. It shows which of the four setup st
 are done for each pen name and what to do next, and the `ads-studio` skill walks
 the author through them.
 
-### 5. Email sending (unlocks Marketing Studio campaigns)
-StorytellerOS ships its own email engine — BYO SMTP, unlimited contacts, no
-per-subscriber fees. Senders are **per pen name**:
+### 5. Email sending (unlocks Email Studio campaigns)
+StorytellerOS ships its own email engine: bring your own sending account,
+unlimited contacts, no per-subscriber fees. Senders are **per pen name**:
 
-> Open **Marketing Studio → Email → Settings → Sender**, pick your SMTP
-> provider (or enter host/port/username/password), set the from-address, and
-> send the verification email.
+> Open **Settings → Email Sending** at storytelleros.com, pick your email
+> provider (or enter its server details), set the from-address, and send the
+> test email to verify it.
 
 `readiness.emailSending.perPenName` shows configured/verified per pen name.
 Once verified, campaigns, automations, contacts, lists, and signup forms all
 work over MCP (`stos_email_*`; orient with `stos_email_overview`).
 
 ### 6. Optional polish
-- BYOK AI key (Settings → Integrations) for in-app AI features
-- Freepik key for AI covers and marketing imagery
-- Claude connector already works — they're talking to you through it
+- Their own AI key (Settings → AI Integration) for in-app AI features
+- An image provider key (Settings → Images) for AI covers and marketing imagery
+- The Claude connector already works: they're talking to you through it
 
 ## Suggested opening move
 
 For a brand-new account, after reading readiness, a strong opener is:
 
 > "Let's get your first book in. Are you already published on Amazon? If so,
-> grab any of your books' Amazon pages and paste me the ASIN — or tell me the
+> grab any of your books' Amazon pages and paste me the ASIN. Or tell me the
 > pen name you write under and we'll start from scratch."
 
 Then do the work with them, one exchange at a time.
@@ -112,6 +118,7 @@ Then do the work with them, one exchange at a time.
 ## Handoffs
 - Connector/auth problems → `stos-setup` skill
 - Multi-pen-name questions → `pen-names` skill
-- Manuscript → story bible → `story-bible` skill
+- Importing a manuscript → `manuscript-import` skill
+- Building the story bible → `story-bible` skill
 - Social posting → `social-handoff` skill
-- Email campaigns in depth → `marketing-studio` skill
+- Email campaigns in depth → `marketing-studio` skill (Email Studio)

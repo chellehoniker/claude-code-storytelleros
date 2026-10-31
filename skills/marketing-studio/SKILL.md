@@ -1,17 +1,18 @@
 ---
 name: marketing-studio
-description: Use when the user wants to manage email lists, contacts, tags, email campaigns, articles, FAQs, or webinars. EXCLUDES social — social work uses the `social-handoff` skill (stos_social_* tools on the same connector). Triggers on "add subscribers to [list]", "draft a newsletter", "send my latest campaign", "publish an article", "add a webinar".
+description: Use for Email Studio work: email lists, contacts, tags, campaigns, automations, signup forms and sending setup. EXCLUDES social, which uses the `social-handoff` skill (stos_social_* tools on the same connector). Triggers on "add subscribers to [list]", "draft a newsletter", "send my latest campaign", "set up a welcome sequence", "import my subscribers".
 ---
 
-# Marketing Studio
+# Email Studio
+
+(The skill id stays `marketing-studio` so existing installs keep working; the app calls this area **Email Studio**.)
 
 ## What this covers vs. social
 
 | Channel | Skill |
 |---|---|
-| Email (lists, campaigns, sends) | `marketing-studio` (this) |
-| Articles / long-form posts | `marketing-studio` |
-| FAQs, webinars | `marketing-studio` |
+| Email (lists, campaigns, sends, automations, forms) | `marketing-studio` (this) |
+| Blog posts on the author's WordPress site | `wordpress-posts`, `blog-post-and-newsletter` |
 | Social posts / scheduling / campaigns | `social-handoff` (`stos_social_*`) |
 
 This skill never calls a social tool itself; hand social work to `social-handoff`.
@@ -33,7 +34,7 @@ Subscription is **per (contact, pen name)**, not per contact. One email contact 
 stos_email_contacts_list({ })  // optional filters
 stos_email_contacts_create({ fields: { email, first_name, last_name, ... } })
 stos_email_lists_list()
-stos_email_lists_create({ fields: { list_name, description } })
+stos_email_lists_create({ fields: { name, pen_name_id, description } })
 stos_email_tags_list()
 ```
 
@@ -42,7 +43,8 @@ stos_email_tags_list()
 ```js
 stos_email_campaigns_list()
 stos_email_campaigns_get({ id })
-stos_email_campaigns_create({ fields: { subject, preview_text, body_html, pen_name_id, list_ids: [...], tag_ids: [...] } })
+stos_email_campaigns_create({ fields: { campaign_name, subject_line, preheader, email_body_html, pen_name_id, list_ids: [...], tag_ids: [...] } })
+// campaign_name is required; the campaign starts as a draft
 ```
 
 ### Before you can send
@@ -50,7 +52,7 @@ stos_email_campaigns_create({ fields: { subject, preview_text, body_html, pen_na
 Verify all of the following before calling `_send`. The send will fail otherwise:
 
 1. Campaign has `pen_name_id` set.
-2. That pen name has an `email_pen_name_senders` row configured — the user sets this up at `/dashboard/settings/email-connection`.
+2. That pen name has a verified sender. Check with `stos_email_senders_list({ penNameId })`. The author sets one up in **Settings → Email Sending** (their own email provider; `stos_email_senders_save` then `stos_email_senders_test` can do it in chat if they give you the details) or **Settings → Email Domains** for StorytellerOS-managed sending (`stos_managed_email_domains_request`, which has a per-email charge the author must agree to).
 3. Campaign has at least one of `list_ids` or `tag_ids` selected (otherwise the audience resolves to zero).
 
 If the user says "send to all my subscribers", resolve the audience count first and surface it before triggering.
@@ -120,7 +122,7 @@ stos_email_automation_steps_create({ fields: {
 }});
 stos_email_automation_steps_create({ fields: {
   automation_id: auto.id, position: 1, delay_value: 3,  delay_unit: 'days',
-  subject_line: 'Day 3 — what to read next', email_body_html: '<p>…</p>',
+  subject_line: 'Day 3: what to read next', email_body_html: '<p>…</p>',
 }});
 ```
 
@@ -282,15 +284,6 @@ stos_email_campaigns_send({ id })  // STOS sends, STOS tracks
 ```
 
 The bulk path is for read-only mirroring of sends that happened elsewhere — opens / clicks come from the source ESP's analytics, not from STOS's pixel (because STOS never put a pixel in those emails).
-
-## Articles and webinars (read-only)
-
-```js
-stos_articles_list()   // recent Indie Author Magazine articles
-stos_webinars_list()   // Indie Author Training webinars and talks
-```
-
-These two surface global content feeds — not author-owned records. They're read-only references with no create / update / delete: pull current articles or upcoming webinars into a campaign, a newsletter, or a recommendation. There is no FAQs tool — FAQ content is managed inside StorytellerOS directly.
 
 ## Anti-patterns
 

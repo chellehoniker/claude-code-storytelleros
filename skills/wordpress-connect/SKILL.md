@@ -5,7 +5,7 @@ description: Use when the user wants to connect their self-hosted WordPress site
 
 # WordPress connection
 
-The user connects their self-hosted WordPress site to StorytellerOS once, then every WordPress feature in StorytellerOS (Marketing Studio Posts/Pages, Sales Studio shop products, Media Studio library) acts on that site.
+The user connects their self-hosted WordPress site to StorytellerOS once, then every WordPress feature in StorytellerOS (Website Studio posts and pages, Sales Studio shop products, Media Studio library) acts on that site.
 
 ## How the connection works
 

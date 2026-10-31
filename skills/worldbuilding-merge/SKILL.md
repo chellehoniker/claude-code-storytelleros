@@ -76,7 +76,7 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 >
 > **You:** *(call `stos_locations_get_many({ ids: [keep1, keep2, keep3, boerne1, boerne2] })` — ONE call for all five.)*
 >
-> "The High Keep" has the longest description and the most detailed key_features. I'll merge "The Keep" + "High Keep" into "The High Keep" (keeping both shorter names as aliases). For Boerne, "Boerne, Texas" has more development_notes and the climate field filled in — I'll fold "Boerne" into it.
+> "The High Keep" has the longest description and the most detailed key_features. I'll merge "The Keep" + "High Keep" into "The High Keep" (keeping both shorter names as aliases). For Boerne, "Boerne, Texas" has more development_notes and the climate field filled in, so I'll fold "Boerne" into it.
 >
 > *(call `stos_locations_update` for each winner, then `stos_locations_delete` for the three losers.)*
 >

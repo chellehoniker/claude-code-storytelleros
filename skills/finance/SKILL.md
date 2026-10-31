@@ -22,7 +22,7 @@ If the user says "log a $400 expense to Sarah Marsh for editing on *Curses and C
 ```js
 stos_finance_transactions_create({
   fields: {
-    transactionName: 'Editing — Sarah Marsh',
+    transactionName: 'Editing: Sarah Marsh',
     transactionType: 'expense',
     amount: 400,
     transactionDate: '2026-05-13',

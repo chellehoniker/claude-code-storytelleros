@@ -5,13 +5,13 @@
     "email": "support@storytelleros.com",
     "url": "https://storytelleros.com"
   },
-  "description": "Claude plugins for indie authors using StorytellerOS. Connect your StorytellerOS workspace and orchestrate everything — drafting titles, story bibles, time-tracking, tasks, finance, sales-studio, marketing-studio, calendar — from inside Claude.",
+  "description": "Claude plugins for indie authors using StorytellerOS. Connect your StorytellerOS workspace and orchestrate everything (drafting titles, manuscript import, story bibles, time-tracking, tasks, finance, Sales Studio, Email Studio, calendar) from inside Claude.",
   "plugins": [
     {
       "name": "storytelleros",
       "source": "./",
-      "description": "Draft titles in Claude (screenplay / audiobook / novel / game — STOS calls them all 'titles'), generate full story bibles, capture tasks, run writing timers, log finance, manage your calendar, and lift sales/marketing assets — without leaving the conversation. Pairs with a StorytellerOS account; the connector is added separately so the credential fields stay editable. Social Studio and Ads Studio run on the same connector.",
-      "version": "0.9.0"
+      "description": "Draft titles in Claude (screenplay, audiobook, novel or game: StorytellerOS calls them all 'titles'), import manuscripts, generate full story bibles, capture tasks, run writing timers, log finance, manage your calendar, and lift sales and email assets without leaving the conversation. Pairs with a StorytellerOS account; the connector is added separately so the credential fields stay editable. Social Studio and Ads Studio run on the same connector.",
+      "version": "0.10.0"
     }
   ]
 }

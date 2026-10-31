@@ -34,7 +34,7 @@ Use this only when:
 
 **Warn the user before kicking it off:** the server extractor runs against their saved AI API key (NOT their Claude Subscription), so it costs real money per run. And it's a one-shot batch — if it misses entries or mis-categorizes a relationship, there's no iteration; the only recourse is to re-run, which double-charges the API key. One user spent $50 in a single book this way before the issue was understood.
 
-If the title has an uploaded manuscript in STOS — check with `stos_title_manuscripts_list({ titleId })`, or look for `manuscript_storage_path` on the title — kick off the server-side pipeline in **one call**:
+The extractor reads the title's imported chapters. Check that they exist with `stos_chapters_list({ bookId: titleId })`. If the manuscript hasn't been imported yet, import it first with the `manuscript-import` skill. Then kick off the server-side pipeline in **one call**:
 
 ```
 stos_titles_extract_story_bible({ titleId })
@@ -87,13 +87,13 @@ stos_pen_names_list()
 stos_titles_list({ penNameId })
 ```
 
-Confirm scope with the user before running a long loop. ("I'll build the bible for *Curses and Currents* under your Indie Annie pen name — that's 8 chapters, expect ~15 characters, ~8 locations. OK to proceed?")
+Confirm scope with the user before running a long loop. ("I'll build the bible for *Curses and Currents* under your Indie Annie pen name. That's 8 chapters, expect ~15 characters, ~8 locations. OK to proceed?")
 
 ### 2. Sources of truth
 
 The user may give Claude one of:
 
-- An uploaded manuscript (read it via the title's `word_doc_storage_path` or the latest `book_manuscripts` revision).
+- An imported manuscript. Its chapters and scenes are in StorytellerOS: list them with `stos_chapters_list({ bookId: titleId })` and `stos_scenes_list({ chapterId })`, then read each scene's full text with `stos_scenes_get_content({ id })`. Work chapter by chapter so the whole book never sits in the conversation at once. If the author has a file that isn't imported yet, use the `manuscript-import` skill first (it asks whether they want the story bible built at all).
 - An outline / synopsis pasted in chat.
 - The current chapters / scenes already in STOS (`stos_chapters_list`, `stos_scenes_list`).
 - Whole-cloth generation from a premise.
@@ -172,8 +172,8 @@ If any single `_create` call failed mid-loop, surface the failure with the entry
 
 ## Very large manuscripts
 
-The server-side path (Path A) already chunks the manuscript into provider-fitting pieces and dedupes drafts across chunks, so a 200k-word novel runs in one `stos_titles_extract_story_bible` call. You don't need to pre-split anything. The progress detail surfaced through `stos_extraction_jobs_get` will show the chunk count as it works through the book.
+The server-side path (Path B) already chunks the manuscript into provider-fitting pieces and dedupes drafts across chunks, so a 200k-word novel runs in one `stos_titles_extract_story_bible` call. You don't need to pre-split anything. The progress detail surfaced through `stos_extraction_jobs_get` will show the chunk count as it works through the book.
 
 If the server returns `terminal_error.kind === 'oversize'`, that means a *single chapter* exceeds the provider context window — extremely rare. Tell the user, suggest splitting the offending chapter, and don't retry blindly.
 
-Path B's per-entity loop has no chunking — if a user pastes a 200k-word manuscript directly into chat (no upload), stop and ask them to upload it to the title first so you can use Path A. Pasting a novel into chat just to feed the loop wastes their token budget and risks the same mid-loop cutoff.
+Path A's per-entity loop has no chunking of its own. If a user pastes a 200k-word manuscript directly into chat, stop and import it to the title first with the `manuscript-import` skill. Then either run Path A chapter by chapter from the imported scenes, or use Path B if the book is too large for the loop. Pasting a novel into chat just to feed the loop wastes their token budget and risks the same mid-loop cutoff.
