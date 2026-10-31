@@ -73,6 +73,55 @@ matter.
 | What should I even run? | `stos_ads_plans_list`, then the strategy flow below |
 | Is my Amazon data current? | `stos_ads_amazon_status`, then `stos_ads_amazon_sync` |
 
+## Start here: setup
+
+When an author asks for help with ads, call `stos_ads_setup_status` first, and call
+it again after each step. It returns `{ pens, canEdit, canConnect }`. Each pen has
+four steps, each with a state (done, todo, skipped or info) and an ordered list of
+`actions` (tool plus a plain note). Pass `penNameId` for one pen name, or leave it
+out to see all of them. Two flags gate what you may do. Connecting accounts needs
+`canConnect`. Changing pixels, creating strategies or ads, and running the current-ads
+check need `canEdit`. A teammate who can edit has `canEdit: true` and
+`canConnect: false`, so they can do everything except connect. When a flag is false,
+explain the steps but do not try the actions it gates.
+
+Walk the steps in order, by these exact titles, and follow each step's `actions` in
+order. These are the same steps the author sees in the app.
+
+1. **Connect your ad accounts.** `stos_ads_capabilities` shows what is already
+   connected. For Meta, TikTok, Google, LinkedIn, Pinterest and X, `stos_ads_connect`
+   returns a sign-in link. Amazon's link comes back as `signInUrls.amazon` on the
+   step. Ask the author to open the link and sign in, then call
+   `stos_ads_setup_status` again to confirm.
+2. **Choose your Facebook Page and Instagram account.** For information only for
+   now. Tell the author what the step shows (the Page name, or that choosing one is
+   coming soon) and move on. Do not try to set it.
+3. **Set up your pixel.** Follow the actions the status returns for each connected
+   network, because they differ by network. Look at what exists first
+   (`stos_ads_tracking_setup_get`, then `stos_ads_tracking_setup_pixels_list`), and
+   reuse an existing pixel when there is one. Save the one the author picks with
+   `stos_ads_tracking_destination_update` before you verify it with
+   `stos_ads_tracking_verify`. Google uses a conversion destination, not a pixel:
+   `stos_ads_conversion_destinations_list`, then
+   `stos_ads_tracking_destination_update`. For networks other than Meta, verifying is
+   a hand check: ask the author whether it is reporting, and only then confirm.
+4. **Choose how to start.** Offer the four starts by these exact labels. They are
+   alternatives for the author to pick from. Never run them in sequence.
+   - **Draft a strategy.** `stos_ads_strategy_plan_create` first, then
+     `stos_ads_strategy_plan_generate` with the `planId` it returned. The generate
+     call fails without that id.
+   - **Check my current ads.** See the flow below.
+   - **Just make an ad.** `stos_ads_create`, or `stos_ads_amazon_create` for Amazon.
+     Ads start paused (rule 4).
+   - **Work through it with your AI assistant.** This is the conversation already
+     happening: keep calling `stos_ads_setup_status` and take the next step with
+     the author.
+
+Say it the way the author would. A sample line: "Your ad accounts are connected. Next
+is your pixel, which lets your ads learn who buys. Want me to check what you have
+already?" Keep tool names, network internals and account ids out of what you say
+to the author.
+
 ## Flow: work out a strategy before spending
 
 The house playbook is deterministic — it is not the model guessing. Give it the
@@ -84,7 +133,7 @@ what to test first, and the numbers at which to stop or scale.
 2. `stos_ads_strategy_plan_create` with the situation brief: work type, genre, where
    the book sits in the catalogue (first in series / mid / standalone / box set), how
    it is sold (KU / wide / direct), and budget posture.
-3. `stos_ads_strategy_plan_generate`, then read it back with
+3. `stos_ads_strategy_plan_generate` with the `planId` that create returned, then read it back with
    `stos_ads_strategy_plan_get`. **Gaps are meaningful**: an area listed
    in `gaps` is one where the playbook has NO opinion, and presenting a default
    there as a recommendation is the failure mode to avoid. Say the author must
@@ -97,8 +146,20 @@ Four research reads support this, and all four cost nothing: keyword ideas
 (`stos_ads_strategy_keyword_ideas`), reach estimate
 (`stos_ads_strategy_reach_estimate`), ad-library scan
 (`stos_ads_strategy_ad_library_scan`, what comparable books are running, in their
-own words), and review audit (`stos_ads_strategy_review_audit`). The review audit is the best source of ad copy there is, because
+own words; the scan searches ads shown in the UK and Ireland by default and can
+search other EU countries. For ads shown only in the US, use Meta's own Ad Library
+site), and review audit (`stos_ads_strategy_review_audit`). The review audit is the best source of ad copy there is, because
 it is the words real readers already used.
+
+## Flow: check my current ads
+
+Call `stos_ads_optimize`. It reads live campaigns and returns actions to review. It
+never changes anything. Give the author a plain verdict for each campaign: working,
+needs a look, or too early to tell. Use ordinary words, not ad-buyer jargon, and
+apply the five rules above, especially rule 5 (a small spend is too early to tell)
+and rule 1 (one currency at a time). Whenever Amazon is connected, say
+plainly that Amazon ads are not part of this check yet, and offer the separate Amazon
+profitability check (`stos_ads_amazon_profitability`) instead.
 
 ## Flow: create an ad for a title
 

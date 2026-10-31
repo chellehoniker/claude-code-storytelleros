@@ -76,7 +76,11 @@ Social OAuth happens in the browser — it cannot be completed over MCP.
 
 After connecting, scheduling works from Social Studio, and Claude can post,
 schedule and run campaigns through the same StorytellerOS connector (see the
-`social-handoff` skill). Ads work the same way (`ads-studio`).
+`social-handoff` skill).
+
+For ads, call `stos_ads_setup_status` first. It shows which of the four setup steps
+are done for each pen name and what to do next, and the `ads-studio` skill walks
+the author through them.
 
 ### 5. Email sending (unlocks Marketing Studio campaigns)
 StorytellerOS ships its own email engine — BYO SMTP, unlimited contacts, no
