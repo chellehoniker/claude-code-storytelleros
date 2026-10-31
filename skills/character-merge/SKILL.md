@@ -61,7 +61,7 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 >
 > **User:** Merge the Drake pair and the Kat group. Eric is fine, keep him separate.
 >
-> **You:** *(call `stos_characters_get_many({ ids: [drake1, drake2, kat1, kat2, kat3] })` — ONE call for all five.)*
+> **You:** *(call `stos_characters_get_many({ ids: [drake1, drake2, kat1, kat2, kat3] })`: ONE call for all five.)*
 >
 > Drake Kingston has the longer background and the dragon-knight backstory. Drake is just a name + age. I'll merge Drake into Drake Kingston (keeping Drake as an alias).
 >

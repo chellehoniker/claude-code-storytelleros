@@ -54,7 +54,15 @@ Prose lives on **scenes**, and it is saved with `stos_scenes_set_content({ id, c
 - **Existing chapter:** write each changed scene with `stos_scenes_set_content`. The chapter text and word count rebuild from its scenes, and the app keeps a version the author can restore.
 - **New chapter:** `stos_chapters_create({ fields: { book_id: titleId, chapter_number, chapter_title } })`. It already has an empty Scene 1: get it with `stos_scenes_list({ chapterId })` and write to it. Don't create a second Scene 1.
 - **More scenes:** `stos_chapters_insert_scene({ id: chapterId, order })`, then `stos_scenes_set_content` on the new scene. If that answers paused (409 `STRUCTURE_OPS_PAUSED`), create the scene with `stos_scenes_create({ fields: { book_id, chapter_id, scene_title, scene_order } })` instead.
-- If `stos_scenes_set_content` answers 409 `CHAPTER_NOT_REBUILDABLE`, nothing was written. Don't retry; tell the author to make that change in the Writing Studio.
+
+#### Check every save result
+
+After each `stos_scenes_set_content`, read `chapter_synced`, `chapter_sync_reason` and `chapter_snapshot_version_id`:
+
+- **`chapter_sync_reason: 'adopted_scenes'`:** the chapter had text its scenes didn't (an edit made in the app, or a restored version). That earlier chapter text was saved first, in the chapter's version history, as a version named "Before assistant update" (its id is `chapter_snapshot_version_id`); then the chapter was rebuilt from the scenes. Always tell the author, for example: "Your chapter had changes I hadn't seen, so I saved the earlier text first. To get it back, open the chapter in the Writing Studio, open Version history, and restore the version called Before assistant update."
+- **`chapter_synced: false`:** the scene is saved, but the chapter text was left as it was for now (for example, another scene in the chapter has no text yet). It catches up on a later save. Mention it if the author is about to read the chapter.
+- **409 `CHAPTER_NOT_REBUILDABLE`:** nothing was written. Wait a few seconds and retry the same call once. If it fails again, stop and tell the author the save didn't go through and their text is unchanged.
+- `version_recorded: false` only means no history snapshot was taken; the prose is still saved.
 
 If the author has a whole manuscript file to bring in, use the `manuscript-import` skill instead of saving chapter by chapter.
 

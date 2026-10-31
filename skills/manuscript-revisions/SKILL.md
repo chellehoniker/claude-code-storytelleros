@@ -19,9 +19,10 @@ Returns rows with `id`, `storage_path`, `display_name`, `notes`, `bytes`, `uploa
 
 ## Flow: add a new revision
 
-To bring a manuscript file in, use the **`manuscript-import`** skill. `stos_titles_upload_manuscript` saves the file to this list *and* turns it into chapters and scenes; it asks the author first whether to also build the story bible.
+Storing a revision and importing a manuscript are different things. **Storing** keeps a file in this list for reference: it adds no chapters and does not change which revision is active. **Importing** (`stos_titles_upload_manuscript`, the `manuscript-import` skill) adds the file's chapters to the title and makes it the current manuscript.
 
-`stos_title_manuscripts_create` only registers a file that is already stored in StorytellerOS (for example one the author uploaded in the app). It needs the file's stored path, which you can only get from an existing revision or the app; you can't upload a file through it:
+- **Store a reference revision** (the default here): use `stos_title_manuscripts_create`. It registers a file already stored in StorytellerOS, such as one the author uploaded in the app; it needs that file's stored path, which comes from the app or an existing revision. If the author only has the file on their computer, ask them to add it to the title in the app; don't import it to get it stored.
+- **Import it into the book:** only if the author explicitly asks for its chapters to be added. Then switch to the `manuscript-import` skill, which asks its own question first.
 
 ```js
 stos_title_manuscripts_create({

@@ -28,7 +28,7 @@ Call `stos_getting_started` (no arguments). It returns:
 - `guides` — canonical web-app + MCP walkthroughs for each top task
 
 Take the FIRST item in `nextSteps` and offer that. Mention at most one other
-thing exists ("after this there are a couple of optional connections — we'll
+thing exists ("after this there are a couple of optional connections, and we'll
 get to them whenever you like").
 
 If `stos_getting_started` isn't available (older server), fall back to

@@ -76,7 +76,7 @@ A successful response carries:
 
 A good report: "Imported 24 chapters, about 86,000 words, into *Curses and Currents*." Then the warnings, if any.
 
-If the response has no `warnings` or `chapter_ids` fields, the server is an older version; report chapters and words and move on.
+**Older-version guard.** If the response has no `warnings` field, the import ran on an older version of StorytellerOS that can replace a title's existing front and back matter instead of adding to it. Don't treat the missing field as a sign that everything went fine. Report chapters and words, then tell the author, for example: "This import ran on an older version of StorytellerOS. Please open the title in the app and check your front and back matter, such as the dedication and acknowledgements, because the import may have replaced what was there."
 
 ## Step 6: Follow the author's answer from Step 3
 

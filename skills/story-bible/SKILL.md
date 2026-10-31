@@ -19,22 +19,22 @@ The default is the **iterative chat loop**. The server-side extractor is the fal
 
 This is the recommended path for almost every story-bible build. It runs entirely within the user's Claude Subscription, costs no API credits, and — most importantly — lets the author push back mid-build ("you missed Nora's mentor relationship", "this should be act-two, not act-three", "merge these two minor characters"). That conversational refinement is what produces a story bible the author actually wants to keep, instead of one that's "mostly right" with gaps they then have to clean up themselves.
 
-**Tell the user to switch to Sonnet** before starting. Opus burns through Subscription turn quota ~5× faster on extraction work; Sonnet handles the same job and leaves headroom for the iterative refinement. The model selector is at the top of the Claude conversation.
+**Work economically.** The loop runs on the author's own Claude plan allowance, so keep turns lean (one-line summaries, no full records pasted inline) to leave room for their refinements. Don't steer the conversation toward which AI model they use.
 
 The loop is documented in §3-§7 below. Keep "one record at a time" — see the no-shortcuts rule.
 
-**When this path struggles:** very large casts on a tight subscription tier (30+ characters → 8-15 locations → 10-20 events → 5-10 lore entries can exhaust a 5-hour Pro window if run on Opus). If the user reports the loop ran out of turns mid-build, either: switch them to Sonnet and resume from where it stopped, or escalate to Path B for the remaining records. A real prior incident (Deb 2026-05-15) saw the bible save characters but skip lore/events/locations because the agent got cut off mid-loop on Opus — that's the exact symptom that means "use Sonnet" or "switch to Path B for what's left."
+**When this path struggles:** very large casts (30+ characters, 8-15 locations, 10-20 events, 5-10 lore entries) can use up the author's plan allowance before the build finishes. If the loop runs out mid-build, resume from where it stopped once their allowance resets, or, with the author's yes, use Path B for the remaining records. A real prior incident saw the bible save characters but skip lore, events and locations because the session was cut off mid-loop; that is the symptom that means "resume" or "switch to Path B for what's left."
 
 ### Path B — Server-side extractor (fallback, NOT the default)
 
 Use this only when:
 - The user explicitly asks for an unattended/batch run, OR
-- The manuscript is very large (full novel, 80k+ words) and Path A on Sonnet still can't finish in the user's quota window, OR
+- The manuscript is very large (full novel, 80k+ words) and Path A still can't finish within the author's plan allowance, OR
 - Path A has already been tried and ran out of turn budget before completing
 
 **Warn the user before kicking it off:** the server extractor runs against their saved AI API key (NOT their Claude Subscription), so it costs real money per run. And it's a one-shot batch — if it misses entries or mis-categorizes a relationship, there's no iteration; the only recourse is to re-run, which double-charges the API key. One user spent $50 in a single book this way before the issue was understood.
 
-The extractor reads the title's imported chapters. Check that they exist with `stos_chapters_list({ bookId: titleId })`. If the manuscript hasn't been imported yet, import it first with the `manuscript-import` skill. Then kick off the server-side pipeline in **one call**:
+The extractor reads the title's imported chapters. Check that they exist with `stos_chapters_list({ bookId: titleId })`. If the manuscript hasn't been imported yet, import it first with the `manuscript-import` skill. If that import failed, or the author answered "just import", stop: never start extraction without the author's explicit yes. Otherwise kick off the server-side pipeline in **one call**:
 
 ```
 stos_titles_extract_story_bible({ titleId })
@@ -93,7 +93,7 @@ Confirm scope with the user before running a long loop. ("I'll build the bible f
 
 The user may give Claude one of:
 
-- An imported manuscript. Its chapters and scenes are in StorytellerOS: list them with `stos_chapters_list({ bookId: titleId })` and `stos_scenes_list({ chapterId })`, then read each scene's full text with `stos_scenes_get_content({ id })`. Work chapter by chapter so the whole book never sits in the conversation at once. If the author has a file that isn't imported yet, use the `manuscript-import` skill first (it asks whether they want the story bible built at all).
+- An imported manuscript. Its chapters and scenes are in StorytellerOS: list them with `stos_chapters_list({ bookId: titleId })` and `stos_scenes_list({ chapterId })`, then read each scene's full text with `stos_scenes_get_content({ id })`. Work chapter by chapter so the whole book never sits in the conversation at once. If the author has a file that isn't imported yet, use the `manuscript-import` skill first. It asks whether they want the story bible built at all; continue here only if they said yes and the import succeeded.
 - An outline / synopsis pasted in chat.
 - The current chapters / scenes already in STOS (`stos_chapters_list`, `stos_scenes_list`).
 - Whole-cloth generation from a premise.
@@ -176,4 +176,4 @@ The server-side path (Path B) already chunks the manuscript into provider-fittin
 
 If the server returns `terminal_error.kind === 'oversize'`, that means a *single chapter* exceeds the provider context window — extremely rare. Tell the user, suggest splitting the offending chapter, and don't retry blindly.
 
-Path A's per-entity loop has no chunking of its own. If a user pastes a 200k-word manuscript directly into chat, stop and import it to the title first with the `manuscript-import` skill. Then either run Path A chapter by chapter from the imported scenes, or use Path B if the book is too large for the loop. Pasting a novel into chat just to feed the loop wastes their token budget and risks the same mid-loop cutoff.
+Path A's per-entity loop has no chunking of its own. If a user pastes a 200k-word manuscript directly into chat, stop and import it to the title first with the `manuscript-import` skill. If the author said yes to the story bible and the import succeeded, either run Path A chapter by chapter from the imported scenes, or use Path B if the book is too large for the loop. Pasting a novel into chat just to feed the loop wastes their token budget and risks the same mid-loop cutoff.

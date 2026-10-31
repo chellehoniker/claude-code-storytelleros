@@ -47,11 +47,13 @@ Default structure:
 
 Use Media Studio on the StorytellerOS connector (it uses the image provider the user has configured). Aim 16:9, evocative-not-literal.
 
+`sizes` must name at least one platform size. Valid keys: `instagram_feed`, `instagram_story`, `tiktok`, `facebook_feed`, `linkedin`, `twitter`, `pinterest`, `youtube_thumb`, `bluesky`, `threads`, `googlebusiness`, `reddit`, `telegram`, `snapchat`, `whatsapp`, `discord`. The 16:9 ones (`twitter`, `youtube_thumb`, `bluesky`, `reddit`, `discord`) suit a blog header; an unknown key is refused with "Unknown size key".
+
 ```js
 await stos_media_generate({
   taskType: "image",
   prompt: "Watercolor sketch of a writer at dawn, soft pastel palette",
-  sizes: [/* at least one platform size key; images are refused without one */],
+  sizes: ["twitter"],  // required for images; "twitter" is 1200×675 (16:9), a good blog header
 });
 // poll until the job completes; the finished image then appears in the media library
 const jobs = await stos_media_generation_status({});

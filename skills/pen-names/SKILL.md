@@ -71,6 +71,6 @@ Story bible reads (`stos_characters_list`, `stos_locations_list`, `stos_lore_lis
 3. Call `stos_chapters_list({ penNameId, bookId: titleId })` — find chapter 3 (or the next slot)
 4. Call `stos_characters_list({ penNameId })` and `stos_locations_list({ penNameId })` — load story-bible context
 5. Draft the chapter in the cozy voice, given the urn cliffhanger
-6. Show the draft to the user, then on approval save the prose with `stos_scenes_set_content` (see the `chapter-drafting` skill)
+6. Show the draft to the user, then on approval save the prose with `stos_scenes_set_content` and check the save result (see the `chapter-drafting` skill)
 
 If the selector is omitted on any of those calls, it'd go to the primary pen name — wrong identity, wrong story bible, wrong voice.

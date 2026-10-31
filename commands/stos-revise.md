@@ -16,3 +16,4 @@ Follow the `chapter-drafting` skill in revise mode:
 4. Read the current chapter text: `stos_scenes_list({ chapterId })`, then `stos_scenes_get_content({ id })` for each scene.
 5. Apply the feedback while preserving voice and continuity. Show the revised text to the user.
 6. On approval, save each changed scene with `stos_scenes_set_content({ id, content })`. Chapter records don't hold the text, so `stos_chapters_update` can't save it.
+7. Check each save result as the `chapter-drafting` skill describes. If earlier chapter text was saved to Version history, tell the author and how to restore it.
