@@ -11,7 +11,7 @@ skills and hosted STOS tools.
 Existing Claude installations keep their current connection and credentials.
 
 Use the existing STOS account and credential pairs. Claude connections stay
-unchanged; ChatGPT has its own OAuth endpoint on the same hosted MCP server.
+unchanged; ChatGPT signs in through its own sign-in page on the same StorytellerOS connection.
 
 1. Add a custom **Streamable HTTP** MCP server at
    `https://storytelleros.com/api/mcp/chatgpt`. Choose **Automatic/CIMD**, not
@@ -70,8 +70,8 @@ This package is not a claim of public ChatGPT directory approval.
 - **DCR not supported:** choose Automatic/CIMD, not dynamic registration.
 - **Skills installed but no tools:** finish the separate MCP authentication,
   enable the connection, and start a new chat.
-- **OAuth fails after consent:** confirm the server release and migration are
-  complete, then check account access and whether the selected pair was revoked.
+- **Sign-in fails after you approve access:** check that your StorytellerOS account is
+  active and that the credential pair you chose hasn't been revoked.
 - **Enterprise domain restrictions unavailable:** this connection does not
   implement OIDC; workspaces requiring it may block installation.
 - Share the error text with support, never passwords, secrets, or tokens.
@@ -145,7 +145,7 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 
 ## Story bibles, built one entry at a time
 
-The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own save**: no batching, no truncation. For a large manuscript with 50 or more characters, that means 50 or more separate saves, plus linking each one to the scenes it appears in. It's slower than one bulk upload, but every detail arrives intact.
+The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own save**, so nothing gets cut short. For a large manuscript with 50 or more characters, that means 50 or more separate saves, plus linking each one to the scenes it appears in. It's slower than one bulk upload, but every detail arrives intact.
 
 ## Social and ads work on the same connector
 
@@ -167,7 +167,7 @@ Authentication is on the **connector** (added in Step 1 of Install), not the plu
 
 Lost the secret? Generate a new pair from [Settings → API keys](https://storytelleros.com/dashboard/settings/api-keys), then update the connector in Cowork: Settings → Connectors → click the connector → paste the new credentials → Save. The old pair stays revocable from the same Settings card.
 
-If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"*. The bundled `pen-names` skill teaches Claude how to discover your pen names and route subsequent calls. See `skills/pen-names/SKILL.md`.
+If you have multiple pen names, your connector exposes every pen name on your account. Switch between them by saying *"draft under my [pen name]"* or *"switch to [pen name]"*. The bundled `pen-names` skill teaches Claude how to find your pen names and keep working under the one you chose. See `skills/pen-names/SKILL.md`.
 
 ## Troubleshooting
 
