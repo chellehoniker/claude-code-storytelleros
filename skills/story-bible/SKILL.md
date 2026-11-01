@@ -105,7 +105,7 @@ Read whatever they provide before drafting entries.
 For each character mentioned in the source:
 
 1. Assemble the full record (name, role, age, occupation, pronouns, gender, life_status, background, physical_description, personality, pov_status, dialogue_style, core_desire, core_fear, goals_and_motivations, strengths, flaws, internal_conflict, external_conflict, character_arc, backstory, key_relationships, lexicon_and_quirks, emotional_tells, speech_patterns, internal_voice, sample_scene). Apply the canonical-value mapping above before you reach for the tool.
-2. Print a one-line summary per entry (`Sasha — protagonist, witch, POV`) so the user can follow along. **Do not paste the full record block inline** — the full record only goes into the tool call. Inline drafting eats the user's token budget without adding value.
+2. Print a one-line summary per entry (`Sasha: protagonist, witch, POV`) so the user can follow along. **Do not paste the full record block inline**: the full record only goes into the tool call. Inline drafting eats the user's token budget without adding value.
 3. `stos_characters_create({ fields: { ... } })` — one call per character.
 4. Record the returned id so you can link later.
 

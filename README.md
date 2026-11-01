@@ -146,19 +146,18 @@ Claude pulls the relevant story bible, writes in the right pen name's voice, and
 
 ## Story bibles, built one entry at a time
 
-The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own save**: no batching, no truncation. For large manuscripts with 50+ characters, that's 50+ individual `stos_characters_create` calls, then 50+ `stos_worldbuilding_link` calls to wire them into scenes. Slower than a bulk upload but every field arrives intact.
+The `story-bible` skill walks Claude through generating a full bible (characters, locations, events, lore) for a title and saves **each entry as its own save**: no batching, no truncation. For a large manuscript with 50 or more characters, that means 50 or more separate saves, plus linking each one to the scenes it appears in. It's slower than one bulk upload, but every detail arrives intact.
 
 ## Social and ads work on the same connector
 
-The `social-handoff` skill runs Social Studio through the `stos_social_*` tools, and
-`ads-studio` runs Ads Studio through `stos_ads_*`. See
+The `social-handoff` skill runs Social Studio, and `ads-studio` runs Ads Studio,
+through the same connector. See
 [Social and Ads Studio in Claude](https://storytelleros.com/docs/claude-cowork/social-handoff).
 The skill:
 
-1. Resolves the pen name (`stos_pen_names_list`) and passes `penNameId` on every call.
+1. Works out which pen name you mean and keeps every step on that pen name.
 2. Stops with a clear message if the pen name has no social posting set up yet.
-3. Pulls title and voice details from StorytellerOS, then calls the matching
-   `stos_social_*` tool.
+3. Pulls title and voice details from StorytellerOS, then makes the post or ad.
 
 Review the selected account, content, schedule, and any spend before authorizing a
 social or ads action.
@@ -173,9 +172,9 @@ If you have multiple pen names, your connector exposes every pen name on your ac
 
 ## Troubleshooting
 
-- **`stos_*` calls return 401:** run `/stos-setup` or just say "set up storytelleros". The `stos-setup` skill walks through generating fresh credentials and updating the connector.
+- **StorytellerOS says you're not signed in:** run `/stos-setup` or just say "set up storytelleros". The `stos-setup` skill walks through generating fresh credentials and updating the connector.
 - **Tools not showing up at all:** the connector probably wasn't added (Step 1). Add it via Settings → Connectors → Add custom connector.
-- **Wrong pen name's data appearing:** see the `pen-names` skill and pass the `penNameId` argument on every call in a multi-step flow.
+- **Wrong pen name's data appearing:** tell Claude which pen name to use (for example, "work under my [pen name]"). The `pen-names` skill keeps it on that pen name for the rest of the task.
 - **Social or ads tools are missing:** check that the StorytellerOS connector is connected and enabled in the conversation. Analytics and ads need the upgraded Social Studio tier on the account. Never paste credentials into chat.
 
 ## Updating

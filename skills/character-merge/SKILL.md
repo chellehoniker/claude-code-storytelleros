@@ -52,10 +52,10 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 > **You:** I'll look for candidates first. *(call `stos_characters_find_duplicates({ penNameId: 'xyz' })`)*
 >
 > Found 4 candidate groups:
-> - **Drake** + **Drake Kingston** (shared_alias, score 0.95)
-> - **Sasha** + **Sasha M.** (substring_overlap, 0.85)
-> - **Kat** + **Kat Pierson** + **Katherine Pierson** (shared_alias, 0.95)
-> - **Eric** + **Eric the Baby Dragon** (substring_overlap, 0.85)
+> - **Drake** + **Drake Kingston** (one is listed as the other's nickname)
+> - **Sasha** + **Sasha M.** (one name contains the other)
+> - **Kat** + **Kat Pierson** + **Katherine Pierson** (one is listed as the other's nickname)
+> - **Eric** + **Eric the Baby Dragon** (one name contains the other)
 >
 > Do you want me to merge any of these? Note that the Kat group has three records and the Eric pair might be intentional if one is a younger version.
 >

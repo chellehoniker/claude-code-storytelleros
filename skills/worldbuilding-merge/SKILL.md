@@ -66,9 +66,9 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 > **You:** *(call `stos_locations_find_duplicates({})`)*
 >
 > Found 3 candidate groups:
-> - **The Keep** + **High Keep** + **The High Keep** (shared_alias, score 0.95)
-> - **Crystal Caverns** + **Crystal Cave** (substring_overlap, 0.85)
-> - **Boerne** + **Boerne, Texas** (substring_overlap, 0.85)
+> - **The Keep** + **High Keep** + **The High Keep** (one is listed as the other's nickname)
+> - **Crystal Caverns** + **Crystal Cave** (one name contains the other)
+> - **Boerne** + **Boerne, Texas** (one name contains the other)
 >
 > Want to merge any of these? Note that "Crystal Caverns" and "Crystal Cave" might be intentional if one is a smaller area within the other.
 >
