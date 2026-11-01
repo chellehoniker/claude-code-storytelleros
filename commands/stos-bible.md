@@ -1,5 +1,5 @@
 ---
-description: Generate a full story bible for a title — looped, per-entity saves
+description: Generate a full story bible for a title, saving one entry at a time
 argument-hint: <title name or id>
 allowed-tools: [Bash, Read, Write]
 ---
@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write]
 
 Generate a full story bible for: $ARGUMENTS
 
-Follow the `story-bible` skill. Confirm pen-name + title scope first, then loop:
+Follow the `story-bible` skill. Confirm pen-name + title scope first. If the manuscript isn't in StorytellerOS yet, import it with the `manuscript-import` skill first. **Stop here** if the import failed, or if the author answered "just import" to that skill's question: building the story bible needs the author's explicit yes. Only then loop:
 
 1. Draft each **character** as a complete record, save with `stos_characters_create` (one call per character — never batch).
 2. Draft each **location**, save with `stos_locations_create`.

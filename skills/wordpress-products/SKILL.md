@@ -16,7 +16,7 @@ stos_wp_products_list({ search, page, per_page })
 stos_wp_products_get({ id })
 stos_wp_products_create({ fields: { engine, name, description, short_description, sku, price, sale_price, stock, status, featured_media } })
 stos_wp_products_update({ id, fields: { ... } })
-stos_wp_products_delete({ id, force })
+stos_wp_products_delete({ id })   // no force option over the connector; permanent deletion is done in WordPress itself
 ```
 
 All tools take an optional `penNameId` — the user can connect one WordPress site per pen name plus an account default. Omit for the account default; pass a pen name id (from `stos_pen_names_list`) to act on that pen name's site. When the user has multiple pen names and it's ambiguous which site they mean, ask.
@@ -62,7 +62,7 @@ stos_wp_coupons_delete({ id })
 ```js
 const product = await stos_wp_products_create({
   fields: {
-    name: "Demon at Dusk — Limited signed paperback",
+    name: "Demon at Dusk: Limited signed paperback",
     description: "<p>Hand-numbered, signed by the author...</p>",
     sku: "DAD-PB-SIGNED-001",
     price: "29.99",
@@ -88,7 +88,7 @@ stos_wp_coupons_create({
 ### Mark an order refunded
 
 ```js
-stos_wp_orders_update({ id: 1234, fields: { status: "refunded", note: "Customer requested refund — book damaged in shipping" } });
+stos_wp_orders_update({ id: 1234, fields: { status: "refunded", note: "Customer requested refund, book damaged in shipping" } });
 ```
 
 ## Anti-patterns

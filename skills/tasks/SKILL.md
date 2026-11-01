@@ -1,6 +1,6 @@
 ---
 name: tasks
-description: Use when the user wants to review, filter, prioritize, complete, or manage existing tasks — beyond one-shot quick capture. Triggers on "what's on my task list", "show me high-priority tasks", "what's due this week", "mark [task] done", "reschedule [task]". For one-line adds, use `quick-task-capture` instead.
+description: Use when the user wants to review, filter, prioritize, complete, or manage existing tasks, beyond one-shot quick capture. Triggers on "what's on my task list", "show me high-priority tasks", "what's due this week", "mark [task] done", "reschedule [task]". For one-line adds, use `quick-task-capture` instead.
 ---
 
 # Tasks (full management)
@@ -23,9 +23,10 @@ stos_tasks_list({ status: 'to-do', penNameId, bookId: titleId })
 
 Filter combinations:
 - `status` = `to-do` / `in-progress` / `completed`
-- `priority` = `high` / `medium` / `low`
 - `bookId`, `seriesId`, `penNameId` for scope
 - `item_type` if the user differentiates personal vs. project tasks
+
+There is no `priority` filter: list, then keep `high` / `medium` / `low` yourself.
 
 ## Flow: complete
 

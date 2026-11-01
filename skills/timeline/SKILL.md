@@ -1,6 +1,6 @@
 ---
 name: timeline
-description: Use when the user wants to manage the IN-UNIVERSE story timeline — when things happen inside the fictional world. Triggers on "add a story event", "when does the war start in [title]", "what's the canon timeline", "list events in [series]". Distinct from `calendar` (real-world dates).
+description: Use when the user wants to manage the IN-UNIVERSE story timeline: when things happen inside the fictional world. Triggers on "add a story event", "when does the war start in [title]", "what's the canon timeline", "list events in [series]". Distinct from `calendar` (real-world dates).
 ---
 
 # Story Timeline

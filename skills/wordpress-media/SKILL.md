@@ -13,7 +13,7 @@ Images and files in the connected WordPress site's media library. Most often use
 stos_wp_media_list({ page, per_page })
 stos_wp_media_get({ id })
 stos_wp_media_create({ fields: { url?, data_base64?, filename?, mime?, title?, alt? } })
-stos_wp_media_delete({ id, force })
+stos_wp_media_delete({ id })   // no force option over the connector; if WordPress refuses, the author deletes the file in their media library
 ```
 
 All tools take an optional `penNameId` — the user can connect one WordPress site per pen name plus an account default. Omit for the account default; pass a pen name id (from `stos_pen_names_list`) to act on that pen name's site. When the user has multiple pen names and it's ambiguous which site they mean, ask.

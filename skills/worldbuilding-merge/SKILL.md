@@ -1,6 +1,6 @@
 ---
 name: worldbuilding-merge
-description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS, LOCATIONS, or LORE in their story bible. Triggers on "merge locations", "dedupe lore", "I have two records for [place/thing]", "consolidate these characters", "find duplicate locations", "clean up my worldbuilding". For character-only merges, the older `character-merge` skill is still valid — this skill is the broader umbrella covering all three kinds.
+description: Use when the user wants to merge, deduplicate, consolidate, or clean up duplicate CHARACTERS, LOCATIONS, or LORE in their story bible. Triggers on "merge locations", "dedupe lore", "I have two records for [place/thing]", "consolidate these characters", "find duplicate locations", "clean up my worldbuilding". For character-only merges, the older `character-merge` skill is still valid, this skill is the broader umbrella covering all three kinds.
 ---
 
 # Worldbuilding merge — cheap, server-side first
@@ -66,17 +66,17 @@ Default is `0.7`. Lower it to catch more candidates (more false positives, more 
 > **You:** *(call `stos_locations_find_duplicates({})`)*
 >
 > Found 3 candidate groups:
-> - **The Keep** + **High Keep** + **The High Keep** (shared_alias, score 0.95)
-> - **Crystal Caverns** + **Crystal Cave** (substring_overlap, 0.85)
-> - **Boerne** + **Boerne, Texas** (substring_overlap, 0.85)
+> - **The Keep** + **High Keep** + **The High Keep** (one is listed as the other's nickname)
+> - **Crystal Caverns** + **Crystal Cave** (one name contains the other)
+> - **Boerne** + **Boerne, Texas** (one name contains the other)
 >
 > Want to merge any of these? Note that "Crystal Caverns" and "Crystal Cave" might be intentional if one is a smaller area within the other.
 >
 > **User:** Merge the Keep group into one record. The crystal ones are different. The Boerne pair can merge.
 >
-> **You:** *(call `stos_locations_get_many({ ids: [keep1, keep2, keep3, boerne1, boerne2] })` — ONE call for all five.)*
+> **You:** *(call `stos_locations_get_many({ ids: [keep1, keep2, keep3, boerne1, boerne2] })`: ONE call for all five.)*
 >
-> "The High Keep" has the longest description and the most detailed key_features. I'll merge "The Keep" + "High Keep" into "The High Keep" (keeping both shorter names as aliases). For Boerne, "Boerne, Texas" has more development_notes and the climate field filled in — I'll fold "Boerne" into it.
+> "The High Keep" has the longest description and the most detailed key features. I'll merge "The Keep" and "High Keep" into "The High Keep", keeping both shorter names as other names for it. For Boerne, "Boerne, Texas" has more development notes and its climate filled in, so I'll fold "Boerne" into it.
 >
 > *(call `stos_locations_update` for each winner, then `stos_locations_delete` for the three losers.)*
 >

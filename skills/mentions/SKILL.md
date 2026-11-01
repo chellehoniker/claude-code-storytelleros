@@ -1,6 +1,6 @@
 ---
 name: mentions
-description: Use when the user wants to link scene prose to Codex entries (characters, locations, lore) — adding @-mentions explicitly, auto-detecting which characters appear in a scene, or asking "where does X show up in this book?" Triggers on "tag Quinn in this scene", "auto-detect characters", "find every scene the lighthouse appears in", "which characters are in chapter 3", "re-run mention detection".
+description: Use when the user wants to link scene prose to Codex entries (characters, locations, lore): adding @-mentions explicitly, auto-detecting which characters appear in a scene, or asking "where does X show up in this book?" Triggers on "tag Quinn in this scene", "auto-detect characters", "find every scene the lighthouse appears in", "which characters are in chapter 3", "re-run mention detection".
 ---
 
 # Mentions

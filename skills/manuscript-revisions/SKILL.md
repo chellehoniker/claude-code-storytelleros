@@ -7,9 +7,7 @@ description: Use when the user wants to list, upload, or switch between manuscri
 
 ## What this is
 
-Each title can carry multiple manuscript file revisions in the `manuscripts` Supabase Storage bucket. Authors using Vellum / Scrivener re-export several times during editing — they need each export preserved with a name and notes, not silently overwritten.
-
-The `book_manuscripts` table tracks revisions; `books.word_doc_storage_path` mirrors the *active* one for legacy callers.
+Each title can carry several saved manuscript files (revisions). Authors re-export from their writing app several times during editing, and each export should be kept with a name and notes, not silently overwritten. One revision is marked *active*.
 
 ## Flow: list
 
@@ -19,9 +17,12 @@ stos_title_manuscripts_list({ titleId })
 
 Returns rows with `id`, `storage_path`, `display_name`, `notes`, `bytes`, `uploaded_at`.
 
-## Flow: register a new revision
+## Flow: add a new revision
 
-The user uploads the file themselves (the plugin doesn't upload files directly — the user goes through the dashboard's upload UI or generates a presigned URL via the in-app flow). Once uploaded:
+Storing a revision and importing a manuscript are different things. **Storing** keeps a file in this list for reference: it adds no chapters and does not change which revision is active. **Importing** (`stos_titles_upload_manuscript`, the `manuscript-import` skill) adds the file's chapters to the title and makes it the current manuscript.
+
+- **Store a reference revision** (the default here): use `stos_title_manuscripts_create`. It registers a file already stored in StorytellerOS, such as one the author uploaded in the app; it needs that file's stored path, which comes from the app or an existing revision. If the author only has the file on their computer, ask them to add it to the title in the app; don't import it to get it stored.
+- **Import it into the book:** only if the author explicitly asks for its chapters to be added. Then switch to the `manuscript-import` skill, which asks its own question first.
 
 ```js
 stos_title_manuscripts_create({
@@ -38,7 +39,7 @@ stos_title_manuscripts_create({
 stos_title_manuscripts_set_active({ id })
 ```
 
-This mirrors the storage path onto the parent title's `word_doc_storage_path`. Subsequent reads (chapter drafting, story-bible extraction) use the newly-active file.
+This makes that file the title's current manuscript. Switching revisions does not change the chapters and scenes already in the title; those only change through an import or edits.
 
 ## Flow: rename / annotate
 
@@ -52,9 +53,9 @@ stos_title_manuscripts_update({ id, displayName: 'Final approved', notes: 'Last 
 stos_title_manuscripts_delete({ id })
 ```
 
-The DB row is removed; the underlying storage file is **not** auto-deleted by this call (kept for accidental-recovery safety). Tell the user this so they can clean storage manually if needed.
+The revision is removed from the list, but the stored file itself is kept, so nothing is lost by accident. Tell the user this.
 
 ## Anti-patterns
 
-- **Auto-setting a new upload as active.** Don't — the user may want to register it for archival without switching to it yet.
+- **Auto-setting a new upload as active.** Don't. The user may want to keep it for reference without switching to it yet.
 - **Treating the active revision as the only one.** Each revision is independent; older ones stay accessible.

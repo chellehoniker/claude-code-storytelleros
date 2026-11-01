@@ -136,7 +136,7 @@ stos_retailer_links_create({
   fields: {
     title_variation_id: variationId,
     retailer_id: amazonId,
-    link_name: 'Curses and Currents — Kindle',
+    link_name: 'Curses and Currents: Kindle',
     product_url: 'https://amazon.com/dp/...',
     status: 'live',
     go_live_date: '2026-05-13',
@@ -179,7 +179,7 @@ stos_reviews_create({
 When you have many variations or retailer links to manage in one pass (e.g. importing a backlog, syncing translations, batch-updating ISBNs), use the bulk endpoints instead of looping per-record:
 
 - **`stos_title_variations_bulk({ items: [...] , on_conflict: 'merge' | 'skip' | 'error' | 'ask' })`** — import or upsert many variations at once. Use `on_conflict: 'ask'` for safety when you're not sure if records exist; the API returns candidates and you re-submit with `force_action` after the user confirms.
-- **`stos_title_variations_duplicates({ penNameId?, titleId? })`** — server-side duplicate finder (matches on ASIN if present, else on book_id + variation_name + type). Returns slim records (id / name / type / language); fetch the full record only for the ones you actually need to merge.
+- **`stos_title_variations_duplicates({})`** (takes no arguments; covers the whole account) — server-side duplicate finder (matches on ASIN if present, else on book_id + variation_name + type). Returns slim records (id / name / type / language); fetch the full record only for the ones you actually need to merge.
 - **`stos_retailer_links_bulk({ items: [...] })`** — same pattern for retailer links. Matches on `(title_variation_id, retailer_id, product_url)`.
 
 These tools exist because looping `_create` or `_update` per record forces every MCP round-trip to replay the full tool schema (~50KB per turn). A 30-variation import via bulk is roughly one round-trip; the same import via a loop is 30. Same principle as the `character-merge` skill — let the server do the per-record work and keep Claude's context small.

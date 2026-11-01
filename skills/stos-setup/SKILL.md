@@ -62,7 +62,7 @@ for both; do not invent per-credential pen-name permission controls.
 Two parts, intentionally split:
 
 1. **The connector** — added manually via Cowork's "Add custom connector" dialog. Lives at `https://storytelleros.com/api/mcp` and authenticates with a Cowork connector credential pair the user generates from their dashboard. Cowork mints a Bearer token for each MCP request.
-2. **The plugin** — installed via the marketplace. Adds 28 skills (`stos-setup`, `getting-started`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `story-bible`, `worldbuilding`, `worldbuilding-merge`, `character-merge`, `markers`, `mentions`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `marketing-studio`, `social-handoff`, `blog-post-and-newsletter`, `wordpress-connect`, `wordpress-posts`, `wordpress-pages`, `wordpress-products`, `wordpress-media`, `wordpress-seo`, `wordpress-llm-optimization`) and 7 slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`, `/stos-bible`, `/stos-finance`, `/stos-revise`). No connector bundled.
+2. **The plugin** — installed via the marketplace. Adds 30 skills (`stos-setup`, `getting-started`, `pen-names`, `quick-task-capture`, `chapter-drafting`, `manuscript-import`, `story-bible`, `worldbuilding`, `worldbuilding-merge`, `character-merge`, `markers`, `mentions`, `time-tracking`, `finance`, `calendar`, `timeline`, `tasks`, `manuscript-revisions`, `sales-studio`, `ads-studio`, `marketing-studio` (Email Studio), `social-handoff`, `blog-post-and-newsletter`, `wordpress-connect`, `wordpress-posts`, `wordpress-pages`, `wordpress-products`, `wordpress-media`, `wordpress-seo`, `wordpress-llm-optimization`) and 7 slash commands (`/stos-task`, `/stos-write`, `/stos-time`, `/stos-search`, `/stos-bible`, `/stos-finance`, `/stos-revise`). No connector bundled.
 
 We deliberately do NOT bundle the connector in the plugin manifest. When a plugin auto-installs a connector, Cowork locks the credential fields, which blocks the user from pasting their own credentials. Splitting setup in two keeps those fields editable.
 
@@ -82,7 +82,7 @@ Call `stos_tasks_list` (or any `stos_*` tool). Three possible outcomes:
 
 Tell the user:
 
-> "The connector needs a fresh Cowork connector credential pair. Open https://storytelleros.com/dashboard/settings/api-keys, find the **Cowork Connector** card, click **Generate credential pair**, and copy both values. The secret is shown only once — copy carefully."
+> "The connector needs a fresh Cowork connector credential pair. Open https://storytelleros.com/dashboard/settings/api-keys, find the **Cowork Connector** card, click **Generate credential pair**, and copy both values. The secret is shown only once, so copy it carefully."
 
 Then walk them through pasting:
 

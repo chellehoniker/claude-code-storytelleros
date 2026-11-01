@@ -1,7 +1,7 @@
 {
   "name": "storytelleros",
-  "version": "0.9.0",
-  "description": "Skills and slash commands for StorytellerOS — write titles, build story bibles, run timers, capture tasks, log finance, manage your calendar, AND drive connected WordPress sites — one per pen name (posts, pages, shop products, media) from inside Claude Cowork. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Social Studio and Ads Studio run on the same connector.",
+  "version": "0.10.0",
+  "description": "Skills and slash commands for StorytellerOS: write titles, import manuscripts, build story bibles, run timers, capture tasks, log finance, manage your calendar, run Email Studio, and drive connected WordPress sites (one per pen name: posts, pages, shop products, media) from inside Claude Cowork. Pairs with the manually-added StorytellerOS connector at https://storytelleros.com/api/mcp. Social Studio and Ads Studio run on the same connector.",
   "author": {
     "name": "StorytellerOS",
     "email": "support@storytelleros.com",
@@ -16,6 +16,7 @@
     "fiction",
     "screenwriting",
     "audiobook",
+    "manuscript-import",
     "story-bible",
     "world-building",
     "time-tracking",
@@ -24,7 +25,7 @@
     "finance",
     "calendar",
     "sales-studio",
-    "marketing-studio",
+    "email-studio",
     "wordpress",
     "woocommerce",
     "fluentcart",

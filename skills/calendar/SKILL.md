@@ -1,6 +1,6 @@
 ---
 name: calendar
-description: Use when the user wants to add, find, or manage real-world calendar events — release dates, signings, deadlines, podcast recordings. Triggers on "add to my calendar", "what's on my calendar [date]", "schedule a [thing]", "block out [date] for [thing]". DOES NOT cover story-timeline events — see `timeline` for those.
+description: Use when the user wants to add, find, or manage real-world calendar events: release dates, signings, deadlines, podcast recordings. Triggers on "add to my calendar", "what's on my calendar [date]", "schedule a [thing]", "block out [date] for [thing]". DOES NOT cover story-timeline events, see `timeline` for those.
 ---
 
 # Calendar (user calendar)
@@ -27,7 +27,7 @@ In-universe story dates → `timeline` (events table, the worldbuilding one).
 stos_calendar_events_create({
   fields: {
     calendar_id,
-    title: 'Audiobook narration — Curses and Currents',
+    title: 'Audiobook narration: Curses and Currents',
     start_at: '2026-05-20T10:00:00-05:00',
     end_at: '2026-05-20T13:00:00-05:00',
     location: 'Studio Address',

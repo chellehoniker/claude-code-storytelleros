@@ -8,4 +8,8 @@ allowed-tools: [Bash, Read, Write]
 
 Time-tracking action: $ARGUMENTS
 
-If "start", call `stos_time_tracking_start` with the project / book label the user gave. If "stop", call `stos_time_tracking_stop` and report total elapsed. If "status", call `stos_time_tracking_list` and find the session with `ended_at` null — that's the currently running one. If none, report no active session.
+Follow the `time-tracking` skill.
+
+- **start:** look up the title the user named (`stos_titles_list`) and call `stos_time_tracking_start({ penNameId, bookId, note })`, putting any free-text label in `note`.
+- **stop:** find the running session (below), call `stos_time_tracking_stop({ id })`, and report the total elapsed time.
+- **status:** call `stos_time_tracking_list` and find the session with `end_time` null. That's the one running. If there is none, say no timer is running.
