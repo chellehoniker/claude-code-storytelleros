@@ -3,11 +3,10 @@
 ## ChatGPT / Codex setup
 
 Version 0.10.0: a new `manuscript-import` skill brings a .docx or Markdown manuscript into a
-title and first asks whether to also build the story bible; markers now use notes, and skills
-that saved prose with the wrong tool now use `stos_scenes_set_content`.
+title and first asks whether to also build the story bible; markers now use notes, and every
+skill that writes prose now saves it to the scene correctly.
 Version 0.8.0: Social Studio and Ads Studio run on the StorytellerOS connector alone; the
-`social-handoff` and `ads-studio` skills use `stos_social_*` and `stos_ads_*` tools and no
-longer need a second connector or plugin. Version 0.7.0 added ChatGPT setup using the same
+`social-handoff` and `ads-studio` skills no longer need a second connector or plugin. Version 0.7.0 added ChatGPT setup using the same
 skills and hosted STOS tools.
 Existing Claude installations keep their current connection and credentials.
 
@@ -101,7 +100,7 @@ In Cowork (or Claude Desktop): **Settings → Connectors → Add custom connecto
 - **Advanced settings → client secret:** the value starting with `stcs_` (shown once, copy carefully)
 - Click **Add**.
 
-The connector authenticates immediately and the `stos_*` tools become available.
+The connector signs in right away and StorytellerOS becomes available in your conversations.
 
 ### Step 2: Install the plugin (for skills + slash commands)
 
